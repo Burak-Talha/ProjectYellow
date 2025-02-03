@@ -1,4 +1,4 @@
-package frc.robot.lib.util;
+package frc.robot.lib.util.targets;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import frc.robot.RobotContainer.TargetAB;

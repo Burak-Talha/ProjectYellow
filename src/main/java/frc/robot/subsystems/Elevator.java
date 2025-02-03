@@ -13,7 +13,7 @@ import com.ctre.phoenix6.hardware.Pigeon2;
 import com.ctre.phoenix6.hardware.TalonFX;
 import frc.robot.Constants;
 
-public class ElevatorSubsytem extends SubsystemBase {
+public class Elevator extends SubsystemBase {
 
       public Pigeon2 gyro;
       public TalonFX First_Elevator_Kraken;
@@ -23,7 +23,7 @@ public class ElevatorSubsytem extends SubsystemBase {
       public PIDController elevator_PidController;
 
   /** Creates a new ElevatorSubsytem. */
-  public ElevatorSubsytem() {
+  public Elevator() {
 
     First_Elevator_Kraken = new TalonFX(Constants.First_ElevatorID, "Canivore");
     Second_Elevator_Kraken = new TalonFX(Constants.Second_ElevatorID, "Canivore");

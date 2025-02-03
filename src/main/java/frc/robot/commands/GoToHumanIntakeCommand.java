@@ -12,17 +12,17 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.FieldConstants;
 import frc.robot.RobotContainer.TargetAB;
 import frc.robot.commands.GoToTargetCommand.TargetType;
-import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.Swerve;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class GoToHumanIntakeCommand extends Command {
 
-  SwerveSubsystem swerveSubsystem;
+  Swerve swerveSubsystem;
   String targetType;
   TargetAB targetAB;
 
   /** Creates a new GoToTargetCommand. */
-  public GoToHumanIntakeCommand(SwerveSubsystem swerveSubsystem, TargetAB targetAB) {
+  public GoToHumanIntakeCommand(Swerve swerveSubsystem, TargetAB targetAB) {
     this.swerveSubsystem = swerveSubsystem;
     this.targetAB = targetAB;
     // Use addRequirements() here to declare subsystem dependencies.

@@ -21,7 +21,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.FieldConstants;
 import frc.robot.RobotContainer.TargetAB;
-import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.Swerve;
 
 
 
@@ -34,13 +34,13 @@ public class GoToTargetCommand extends Command {
     CoProcessor
   }
 
-  SwerveSubsystem swerveSubsystem;
+  Swerve swerveSubsystem;
   String targetType;
   TargetAB targetAB;
   PS5Controller joystick;
 
   /** Creates a new GoToTargetCommand. */
-  public GoToTargetCommand(SwerveSubsystem swerveSubsystem, String targetType, TargetAB targetAB) {
+  public GoToTargetCommand(Swerve swerveSubsystem, String targetType, TargetAB targetAB) {
     this.swerveSubsystem = swerveSubsystem;
     this.targetType = targetType;
     this.targetAB = targetAB;
@@ -83,7 +83,7 @@ try{
     }
   }
   else if(targetType==TargetType.CoProcessor.name()){
-      currentTarget = FieldConstants.redCoProcessorTarget;
+      currentTarget = FieldConstants.RED_COPROCESSOR_TARGET;
   }
 
     double Xerror = currentTarget.getX() - swerveSubsystem.getEstimatedPose().getX();

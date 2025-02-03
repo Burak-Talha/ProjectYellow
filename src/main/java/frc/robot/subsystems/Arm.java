@@ -6,9 +6,9 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class CoralintakeSubsystem extends SubsystemBase {
-  /** Creates a new CoralintakeSubsystem. */
-  public CoralintakeSubsystem() {}
+public class Arm extends SubsystemBase {
+  /** Creates a new ArmSubsytem. */
+  public Arm() {}
 
   @Override
   public void periodic() {

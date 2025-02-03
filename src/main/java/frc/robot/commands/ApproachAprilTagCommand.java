@@ -1,7 +1,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.Vision;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
@@ -14,7 +14,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 
 public class ApproachAprilTagCommand extends Command {
 
-    private final SwerveSubsystem swerveSubsystem;
+    private final Swerve swerveSubsystem;
     private final Vision visionSubsystem;
     AprilTagFieldLayout aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape);
     private final int targetId;
@@ -29,7 +29,7 @@ public class ApproachAprilTagCommand extends Command {
     PIDController thetaPidController = new PIDController(0.05, 0, 0);
     
 
-    public ApproachAprilTagCommand(SwerveSubsystem swerveSubsystem, Vision visionSubsystem, int targetId) {
+    public ApproachAprilTagCommand(Swerve swerveSubsystem, Vision visionSubsystem, int targetId) {
         this.swerveSubsystem = swerveSubsystem;
         this.visionSubsystem = visionSubsystem;
         this.targetId = targetId;

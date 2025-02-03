@@ -4,6 +4,8 @@
 
 package frc.robot.commands;
 
+import com.ctre.phoenix6.hardware.CANcoder;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -13,17 +15,17 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.FieldConstants;
 import frc.robot.RobotContainer.TargetAB;
-import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.Swerve;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class GoToCoProcessorCommand extends Command {
 
-  SwerveSubsystem swerveSubsystem;
+  Swerve swerveSubsystem;
 
   PIDController xPidController = new PIDController(1.2, 0.001, 0.01);
   PIDController yPidController = new PIDController(1.2, 0.046, 0);
 
-  public GoToCoProcessorCommand(SwerveSubsystem swerveSubsystem) {
+  public GoToCoProcessorCommand(Swerve swerveSubsystem) {
     this.swerveSubsystem = swerveSubsystem;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(swerveSubsystem);
@@ -38,18 +40,10 @@ public class GoToCoProcessorCommand extends Command {
     Pose2d currentTarget = null;
     try{
     if(DriverStation.getAlliance().get()==Alliance.Red){
-      currentTarget = FieldConstants.redCoProcessorTarget;
+      currentTarget = FieldConstants.RED_COPROCESSOR_TARGET;
     } else{
-      currentTarget = FieldConstants.blueCoProcessorTarget;
+      currentTarget = FieldConstants.BLUE_COPROCESSOR_TARGET;
     }
-
-    /*double Xerror = currentTarget.getX() - swerveSubsystem.getEstimatedPose().getX();
-    double Yerror = currentTarget.getY() - swerveSubsystem.getEstimatedPose().getY();
-    double zError = swerveSubsystem.getGyroAngle() - currentTarget.getRotation().getDegrees();
-    double kP = 0.1;
-    */
-    // zError = (zError + 180) % 360 - 180;
-    //swerveSubsystem.drive(new Translation2d(-Xerror*1,-Yerror*1), -zError*kP, true, true);
 
     double xDemand = xPidController.calculate(swerveSubsystem.getEstimatedPose().getX(), currentTarget.getX());
     double yDemand = yPidController.calculate(swerveSubsystem.getEstimatedPose().getY(), currentTarget.getY());

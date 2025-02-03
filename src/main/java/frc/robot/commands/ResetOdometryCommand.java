@@ -5,15 +5,14 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Constants.Swerve;
-import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.Swerve;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class ResetOdometryCommand extends Command {
 
-  SwerveSubsystem swerveSubsystem;
+  Swerve swerveSubsystem;
   /** Creates a new ResetOdometryCommand. */
-  public ResetOdometryCommand(SwerveSubsystem swerveSubsystem) {
+  public ResetOdometryCommand(Swerve swerveSubsystem) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.swerveSubsystem = swerveSubsystem;
   }
