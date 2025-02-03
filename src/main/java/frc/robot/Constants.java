@@ -9,8 +9,8 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
-import frc.robot.lib.util.COTSTalonFXSwerveConstants;
-import frc.robot.lib.util.SwerveModuleConstants;
+import frc.robot.lib.util.swerve.COTSTalonFXSwerveConstants;
+import frc.robot.lib.util.swerve.SwerveModuleConstants;
 
 public final class Constants {
     public static final double stickDeadband = 0.1;
