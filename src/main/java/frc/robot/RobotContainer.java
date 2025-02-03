@@ -34,14 +34,14 @@ public class RobotContainer {
     private final JoystickButton robotCentric = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
 
     /* Subsystems */
-    private final Swerve s_Swerve = new Swerve( );
-    private final Vision s_Vision = new Vision();
+    private final Swerve swerve = new Swerve( );
+    private final Vision vision = new Vision();
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
-        s_Swerve.setDefaultCommand(
+        swerve.setDefaultCommand(
             new TeleopSwerve(
-                s_Swerve, 
+                swerve, 
                 () -> -driver.getRawAxis(1), 
                 () -> -driver.getRawAxis(0), 
                 () -> driver.getRawAxis(4), 
@@ -63,20 +63,18 @@ public class RobotContainer {
      * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
     private void configureButtonBindings() {
-        new JoystickButton(driver, Button.kY.value).whileTrue(new ResetOdometryCommand(s_Swerve));
+        new JoystickButton(driver, Button.kY.value).whileTrue(new ResetOdometryCommand(swerve));
 
         // Autonomous approach commands
-        new JoystickButton(driver, Button.kB.value).whileTrue(new GoToHumanIntakeCommand(s_Swerve, TargetAB.A).repeatedly());
-        new JoystickButton(driver, Button.kX.value).whileTrue(new GoToHumanIntakeCommand(s_Swerve, TargetAB.B).repeatedly());
+        new JoystickButton(driver, Button.kB.value).whileTrue(new GoToHumanIntakeCommand(swerve, TargetAB.A).repeatedly());
+        new JoystickButton(driver, Button.kX.value).whileTrue(new GoToHumanIntakeCommand(swerve, TargetAB.B).repeatedly());
 
-        new JoystickButton(driver, Button.kA.value).whileTrue(new GoToCoProcessorCommand(s_Swerve).repeatedly());
+        new JoystickButton(driver, Button.kA.value).whileTrue(new GoToCoProcessorCommand(swerve).repeatedly());
 
-        new JoystickButton(driver, Button.kLeftBumper.value).whileTrue(new GoToReefTargetCommand(s_Swerve, s_Vision, TargetAB.A).repeatedly());
-        new JoystickButton(driver, Button.kRightBumper.value).whileTrue(new GoToReefTargetCommand(s_Swerve, s_Vision, TargetAB.B).repeatedly());
+        new JoystickButton(driver, Button.kLeftBumper.value).whileTrue(new GoToReefTargetCommand(swerve, vision, TargetAB.A).repeatedly());
+        new JoystickButton(driver, Button.kRightBumper.value).whileTrue(new GoToReefTargetCommand(swerve, vision, TargetAB.B).repeatedly());
     }
-
-    /**
-     * Use this to pass the autonomous command to the main {@link Robot} class.
+    /*@link Robot} class.
      *
      * @return the command to run in autonomous
      */
