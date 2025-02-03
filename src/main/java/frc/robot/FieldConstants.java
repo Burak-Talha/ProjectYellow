@@ -1,17 +1,13 @@
 package frc.robot;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
-
 import frc.robot.RobotContainer.TargetAB;
-import frc.robot.lib.util.TargetReef;
+import frc.robot.lib.util.targets.TargetReef;
 
 public class FieldConstants {
+    
     public static final Pose2d[] REEF_APRIL_TAG_POSE = {
         new Pose2d(4.073905999999999, 3.3063179999999996, new Rotation2d(Math.toRadians(240.0))),
         new Pose2d(3.6576, 4.0259, new Rotation2d(Math.toRadians(180.0))),
@@ -27,18 +23,18 @@ public class FieldConstants {
         new Pose2d(12.643358, 3.3063179999999996, new Rotation2d(Math.toRadians(240.0)))
       };
   
-      public static final Pose2d[] redHumanPlayerTargets = {
+      public static final Pose2d[] RED_HUMAN_PLAYER_TARGETS = {
           new Pose2d(16.5, 0.944, new Rotation2d(Math.toRadians(50))),
           new Pose2d(16.7, 7, new Rotation2d(Math.toRadians(-50)))
       };
   
-      public static final Pose2d[] blueHumanPlayerTargets = {
+      public static final Pose2d[] BLUE_HUMAN_PLAYER_TARGETS = {
           new Pose2d(1.112, 1.065, new Rotation2d(Math.toRadians(50))),
           new Pose2d(1.322, 6.955, new Rotation2d(Math.toRadians(-15)))
       };
   
-      public static final Pose2d redCoProcessorTarget = new Pose2d(11.7, 7.4  , new Rotation2d(Math.toRadians(-90)));
-      public static final Pose2d blueCoProcessorTarget = new Pose2d(11.6, 7.6  , new Rotation2d(Math.toRadians(0)));
+      public static final Pose2d RED_COPROCESSOR_TARGET = new Pose2d(11.7, 7.4  , new Rotation2d(Math.toRadians(-90)));
+      public static final Pose2d BLUE_COPROCESSOR_TARGET = new Pose2d(11.6, 7.6  , new Rotation2d(Math.toRadians(0)));
   
       public static final TargetReef[] BLUE_TARGET_REEFS = {};
       public static final TargetReef[] RED_TARGET_REEFS = {
@@ -56,11 +52,11 @@ public class FieldConstants {
           new TargetReef(6, TargetAB.B, new Pose2d(13.65, 3.26, new Rotation2d(Math.toRadians(60))))
       };
   
-      public static final Translation2d kLeftTargetOffset = new Translation2d(0.5, -0.164);
-      public static final Translation2d kRightTargetOffset = new Translation2d(0.5, 0.164);
-      public static final Translation2d kCenterTargetOffset = new Translation2d(0, 0.0);
+      public static final Translation2d LEFT_TARGET_OFFSET = new Translation2d(0.5, -0.164);
+      public static final Translation2d RIGHT_TARGET_OFFSET = new Translation2d(0.5, 0.164);
+      public static final Translation2d CENTER_TARGET_OFFSET = new Translation2d(0, 0.0);
   
-      public static final Pose2d[] kReefBlueApriltags = {
+      public static final Pose2d[] BLUE_REEF_APRIL_TAGS = {
         new Pose2d(4.073905999999999, 3.3063179999999996, new Rotation2d(Math.toRadians(60))),
         new Pose2d(3.6576, 4.0259, new Rotation2d(Math.toRadians(0))),
         new Pose2d(4.073905999999999, 4.745482, new Rotation2d(Math.toRadians(-60))),
@@ -69,7 +65,7 @@ public class FieldConstants {
         new Pose2d(4.904739999999999, 3.3063179999999996, new Rotation2d(Math.toRadians(120))),
       };
   
-      public static final Pose2d[] kReefRedApriltags = {
+      public static final Pose2d[] RED_REEF_APRIL_TAGS = {
           new Pose2d(13.4, 3.2, new Rotation2d(Math.toRadians(60))),
           new Pose2d(13.9, 4.055, new Rotation2d(Math.toRadians(0))),
           new Pose2d(13.478 +0.3, 4.776 +0.3, new Rotation2d(Math.toRadians(-60))),
