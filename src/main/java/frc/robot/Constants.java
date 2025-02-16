@@ -161,6 +161,12 @@ public final class Constants {
         private static final double GEAR_RADIUS = 2.5;
         private static final double GEAR_CIRCUMFERENCE = 2*Math.PI*GEAR_RADIUS;
         public static final double POSITION_2_DISTANCE = (1/GEAR_BOX_RATIO)*TRANSMISSION_RATIO*GEAR_CIRCUMFERENCE;
+        
+        public static final double L4_ELEVATOR_HEIGHT = 0;
+        public static final double L3_ELEVATOR_HEIGHT = 0;
+        public static final double L2_ELEVATOR_HEIGHT = 0;
+        public static final double L1_ELEVATOR_HEIGHT = 0;
+        public static final double CORAL_INTAKE = 0;
     }
     
     public static final int ArmID = 2;
