@@ -148,9 +148,20 @@ public final class Constants {
                 kMaxAngularSpeedRadiansPerSecond, kMaxAngularSpeedRadiansPerSecondSquared);
     }
 
-    public static final int First_ElevatorID = 0;
-    public static final int Second_ElevatorID = 1;
-    public static final int Elevator_CancoderID = 10;
+    public static final class ElevatorConstants{
+        public static final int LEFT_ELEVATOR_ID = 0;
+        public static final int RIGHT_ELEVATOR_ID = 1;
+        public static final int ELEVATOR_CANCODER_ID = 10;
+        public static final double KP = 70;
+        public static final double KI = 0;
+        public static final double KD = 1;
+
+        private static final double GEAR_BOX_RATIO = 10.71;
+        private static final double TRANSMISSION_RATIO = 2;
+        private static final double GEAR_RADIUS = 2.5;
+        private static final double GEAR_CIRCUMFERENCE = 2*Math.PI*GEAR_RADIUS;
+        public static final double POSITION_2_DISTANCE = (1/GEAR_BOX_RATIO)*TRANSMISSION_RATIO*GEAR_CIRCUMFERENCE;
+    }
     
     public static final int ArmID = 2;
     public static final int Arm_CancoderID = 11;
