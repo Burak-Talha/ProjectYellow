@@ -12,6 +12,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.*;
+import frc.robot.commands.ElevatorCommands.ElevatorDownCommand;
+import frc.robot.commands.ElevatorCommands.ElevatorUpCommand;
 import frc.robot.subsystems.*;
 
 /**
@@ -22,12 +24,15 @@ import frc.robot.subsystems.*;
  */
 public class RobotContainer {
 
+    ElevatorSubsytem elevatorSubsytem = new ElevatorSubsytem();
+
     public enum TargetAB{
         A, B
     }
 
     /* Controllers */
-    private final PS5Controller driver = new PS5Controller(0);
+    private final Joystick driver = new Joystick(0);
+    private final Joystick operator = new Joystick(1);
 
     /* Drive Controls */
     private final int translationAxis = XboxController.Axis.kLeftY.value;
@@ -74,14 +79,17 @@ public class RobotContainer {
         new JoystickButton(driver, Button.kLeftBumper.value).whileTrue(new GoToReefTargetCommand(s_Swerve, s_Vision, TargetAB.A));
         new JoystickButton(driver, Button.kRightBumper.value).whileTrue(new GoToReefTargetCommand(s_Swerve, s_Vision, TargetAB.B));*/
 
+        // Driver Buttons
         new JoystickButton(driver, Button.kY.value).whileTrue(new ResetOdometryCommand(s_Swerve));
-
         new JoystickButton(driver, Button.kB.value).whileTrue(new GoToHumanIntakeCommand(s_Swerve, TargetAB.A).repeatedly());
         new JoystickButton(driver, Button.kX.value).whileTrue(new GoToHumanIntakeCommand(s_Swerve, TargetAB.B).repeatedly());
         new JoystickButton(driver, Button.kA.value).whileTrue(new GoToCoProcessorCommand(s_Swerve).repeatedly());
-
         new JoystickButton(driver, Button.kLeftBumper.value).whileTrue(new GoToReefTargetCommand(s_Swerve, s_Vision, TargetAB.A).repeatedly());
         new JoystickButton(driver, Button.kRightBumper.value).whileTrue(new GoToReefTargetCommand(s_Swerve, s_Vision, TargetAB.B).repeatedly());
+
+        // Operator Buttons
+        new JoystickButton(operator, 1).whileTrue(new ElevatorUpCommand(elevatorSubsytem));
+        new JoystickButton(operator, 2).whileTrue(new ElevatorDownCommand(elevatorSubsytem));
     }
 
     /**

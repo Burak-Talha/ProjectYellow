@@ -165,8 +165,7 @@ public final class Constants {
         public static final double L4_ELEVATOR_HEIGHT = 0;
         public static final double L3_ELEVATOR_HEIGHT = 0;
         public static final double L2_ELEVATOR_HEIGHT = 0;
-        public static final double L1_ELEVATOR_HEIGHT = 0;
-        public static final double CORAL_INTAKE = 0;
+        public static final double DEFAULT_ELEVATOR_HEIGHT = 0;
     }
     
     public static final int ArmID = 2;
