@@ -12,8 +12,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.*;
+import frc.robot.commands.CleanerCommands.CleanerGetInCommand;
+import frc.robot.commands.CleanerCommands.CleanerGetOutCommand;
 import frc.robot.commands.ElevatorCommands.ElevatorDownCommand;
 import frc.robot.commands.ElevatorCommands.ElevatorUpCommand;
+import frc.robot.commands.GripperCommands.IntakeCoralCommand;
+import frc.robot.commands.GripperCommands.OuttakeCoralCommand;
 import frc.robot.subsystems.*;
 
 /**
@@ -23,8 +27,6 @@ import frc.robot.subsystems.*;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-
-    ElevatorSubsytem elevatorSubsytem = new ElevatorSubsytem();
 
     public enum TargetAB{
         A, B
@@ -44,17 +46,20 @@ public class RobotContainer {
     private final JoystickButton robotCentric = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
 
     /* Subsystems */
-    private final SwerveSubsystem s_Swerve = new SwerveSubsystem( );
+    private final SwerveSubsystem s_Swerve = new SwerveSubsystem();
     private final Vision s_Vision = new Vision();
+    ElevatorSubsytem elevatorSubsytem = new ElevatorSubsytem();
+    GripperSubsystem gripperSubsystem = new GripperSubsystem();
+    Cleaner cleaner = new Cleaner();
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
         s_Swerve.setDefaultCommand(
             new TeleopSwerve(
                 s_Swerve, 
-                () -> -driver.getRawAxis(1), 
-                () -> -driver.getRawAxis(0), 
-                () -> driver.getRawAxis(2), 
+                () -> driver.getRawAxis(1), 
+                () -> driver.getRawAxis(0), 
+                () -> driver.getRawAxis(4), 
                 () -> robotCentric.getAsBoolean()
             )
         );
@@ -80,16 +85,20 @@ public class RobotContainer {
         new JoystickButton(driver, Button.kRightBumper.value).whileTrue(new GoToReefTargetCommand(s_Swerve, s_Vision, TargetAB.B));*/
 
         // Driver Buttons
-        new JoystickButton(driver, Button.kY.value).whileTrue(new ResetOdometryCommand(s_Swerve));
+      /* new JoystickButton(driver, Button.kY.value).whileTrue(new ResetOdometryCommand(s_Swerve));
         new JoystickButton(driver, Button.kB.value).whileTrue(new GoToHumanIntakeCommand(s_Swerve, TargetAB.A).repeatedly());
         new JoystickButton(driver, Button.kX.value).whileTrue(new GoToHumanIntakeCommand(s_Swerve, TargetAB.B).repeatedly());
         new JoystickButton(driver, Button.kA.value).whileTrue(new GoToCoProcessorCommand(s_Swerve).repeatedly());
         new JoystickButton(driver, Button.kLeftBumper.value).whileTrue(new GoToReefTargetCommand(s_Swerve, s_Vision, TargetAB.A).repeatedly());
-        new JoystickButton(driver, Button.kRightBumper.value).whileTrue(new GoToReefTargetCommand(s_Swerve, s_Vision, TargetAB.B).repeatedly());
+        new JoystickButton(driver, Button.kRightBumper.value).whileTrue(new GoToReefTargetCommand(s_Swerve, s_Vision, TargetAB.B).repeatedly());*/
 
         // Operator Buttons
-        new JoystickButton(operator, 1).whileTrue(new ElevatorUpCommand(elevatorSubsytem));
-        new JoystickButton(operator, 2).whileTrue(new ElevatorDownCommand(elevatorSubsytem));
+        //new JoystickButton(operator, 1).whileTrue(new ElevatorUpCommand(elevatorSubsytem));
+        //new JoystickButton(operator, 2).whileTrue(new ElevatorDownCommand(elevatorSubsytem));
+        new JoystickButton(driver, 1).whileTrue(new CleanerGetInCommand(cleaner));
+        new JoystickButton(driver, 2).whileTrue(new CleanerGetOutCommand(cleaner));
+        new JoystickButton(driver, 5).whileTrue(new IntakeCoralCommand(gripperSubsystem));
+        new JoystickButton(driver, 6).whileTrue(new OuttakeCoralCommand(gripperSubsystem));
     }
 
     /**
