@@ -25,17 +25,19 @@ public final class Constants {
         COTSTalonFXSwerveConstants.SDS.MK4.KrakenX60(COTSTalonFXSwerveConstants.SDS.MK4i.driveRatios.L2);
 
         /* Drivetrain Constants */
+        // Distance between right and left wheels
         public static final double trackWidth = Units.inchesToMeters(21.73); //TODO: This must be tuned to specific robot
+        // Distance between front and back wheels
         public static final double wheelBase = Units.inchesToMeters(21.73); //TODO: This must be tuned to specific robot
         public static final double wheelCircumference = chosenModule.wheelCircumference;
 
         /* Swerve Kinematics 
          * No need to ever change this unless you are not doing a traditional rectangular/square 4 module swerve */
          public static final SwerveDriveKinematics swerveKinematics = new SwerveDriveKinematics(
-            new Translation2d(-wheelBase / 2.0, -trackWidth / 2.0),
-            new Translation2d(-wheelBase / 2.0, trackWidth / 2.0),
+            new Translation2d(wheelBase / 2.0, trackWidth / 2.0),
             new Translation2d(wheelBase / 2.0, -trackWidth / 2.0),
-            new Translation2d(wheelBase / 2.0, trackWidth / 2.0));
+            new Translation2d(-wheelBase / 2.0, trackWidth / 2.0),
+            new Translation2d(-wheelBase / 2.0, -trackWidth / 2.0));
 
         /* Module Gear Ratios */
         public static final double driveGearRatio = chosenModule.driveGearRatio;
@@ -61,8 +63,8 @@ public final class Constants {
 
         /* These values are used by the drive falcon to ramp in open loop and closed loop driving.
          * We found a small open loop ramp (0.25) helps with tread wear, tipping, etc */
-        public static final double openLoopRamp = 0.25;  ///0.25
-        public static final double closedLoopRamp = 0;
+        public static final double openLoopRamp = 0.5;  ///0.25
+        public static final double closedLoopRamp = 0.5;
 
         /* Angle Motor PID Values */
         public static final double angleKP = chosenModule.angleKP;
@@ -82,7 +84,7 @@ public final class Constants {
 
         /* Swerve Profiling Values */
         /** Meters per Second */
-        public static final double maxSpeed = 4.5; //TODO: This must be tuned to specific robot
+        public static final double maxSpeed = 3; //TODO: This must be tuned to specific robot
         /** Radians per Second */
         public static final double maxAngularVelocity = 10.0; //TODO: This must be tuned to specific robot
 
@@ -95,8 +97,8 @@ public final class Constants {
         public static final class Mod0 { //TODO: This must be tuned to specific robot
             public static final int driveMotorID = 20;
             public static final int angleMotorID = 21;
-            public static final int canCoderID = 30;
-            public static final Rotation2d angleOffset = Rotation2d.fromDegrees(150);
+            public static final int canCoderID = 32;
+            public static final Rotation2d angleOffset = Rotation2d.fromDegrees(-30);
             public static final SwerveModuleConstants constants = 
                 new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, angleOffset);
         }
@@ -106,27 +108,27 @@ public final class Constants {
             public static final int driveMotorID = 22;
             public static final int angleMotorID = 23;
             public static final int canCoderID = 31;
-            public static final Rotation2d angleOffset = Rotation2d.fromDegrees(72.8);
+            public static final Rotation2d angleOffset = Rotation2d.fromDegrees(-105);
             public static final SwerveModuleConstants constants = 
                 new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, angleOffset);
         }
         
         /* Back Left Module - Module 2 */
-        public static final class Mod2 { //TODO: This must be tuned to specific robot
+        public static final class Mod3 { //TODO: This must be tuned to specific robot
             public static final int driveMotorID = 26;
             public static final int angleMotorID = 27;
             public static final int canCoderID = 33;
-            public static final Rotation2d angleOffset = Rotation2d.fromDegrees(-20);
+            public static final Rotation2d angleOffset = Rotation2d.fromDegrees(66);
             public static final SwerveModuleConstants constants = 
                 new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, angleOffset);
         }
 
         /* Back Right Module - Module 3 */
-        public static final class Mod3 { //TODO: This must be tuned to specific robot
+        public static final class Mod2 { //TODO: This must be tuned to specific robot
             public static final int driveMotorID = 24;
             public static final int angleMotorID = 25;
-            public static final int canCoderID = 32;
-            public static final Rotation2d angleOffset = Rotation2d.fromDegrees(61);
+            public static final int canCoderID = 30;
+            public static final Rotation2d angleOffset = Rotation2d.fromDegrees(-31);
             public static final SwerveModuleConstants constants = 
                 new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, angleOffset);
         }
@@ -149,8 +151,8 @@ public final class Constants {
     }
 
     public static final class ElevatorConstants{
-        public static final int LEFT_ELEVATOR_ID = 0;
-        public static final int RIGHT_ELEVATOR_ID = 1;
+        public static final int LEFT_ELEVATOR_ID = 36;
+        public static final int RIGHT_ELEVATOR_ID = 34;
         public static final int ELEVATOR_CANCODER_ID = 10;
         public static final double KP = 70;
         public static final double KI = 0;
@@ -167,7 +169,17 @@ public final class Constants {
         public static final double L2_ELEVATOR_HEIGHT = 0;
         public static final double DEFAULT_ELEVATOR_HEIGHT = 0;
     }
-    
+
+    public static final class GripperConstants{
+        public static final int LEFT_SPARKMAX_ID = 10;
+        public static final int RIGHT_SPARKMAX_ID = 18;
+    }
+
+    public static final class CleanerConstants{
+        public static final int CLEANER_ROT_SPARKMAX_ID = 3;
+        public static final int CLEANER_POW_SPARKMAX_ID = 35;
+    }
+
     public static final int ArmID = 2;
     public static final int Arm_CancoderID = 11;
     
