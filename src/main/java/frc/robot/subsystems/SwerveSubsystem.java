@@ -79,8 +79,7 @@ public class SwerveSubsystem extends SubsystemBase {
             new SwerveModule(2, Constants.Swerve.Mod2.constants),
             new SwerveModule(3, Constants.Swerve.Mod3.constants)
         };
-
-        
+      
         swerveDrivePoseEstimator = new SwerveDrivePoseEstimator(
         Constants.Swerve.swerveKinematics,
         getGyroYaw(),
