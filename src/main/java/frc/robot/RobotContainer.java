@@ -93,10 +93,10 @@ public class RobotContainer {
         new JoystickButton(driver, Button.kRightBumper.value).whileTrue(new GoToReefTargetCommand(s_Swerve, s_Vision, TargetAB.B).repeatedly());*/
 
         // Operator Buttons
-        //new JoystickButton(operator, 1).whileTrue(new ElevatorUpCommand(elevatorSubsytem));
-        //new JoystickButton(operator, 2).whileTrue(new ElevatorDownCommand(elevatorSubsytem));
-        new JoystickButton(driver, 1).whileTrue(new CleanerGetInCommand(cleaner));
-        new JoystickButton(driver, 2).whileTrue(new CleanerGetOutCommand(cleaner));
+        new JoystickButton(operator, 1).whileTrue(new ElevatorUpCommand(elevatorSubsytem));
+        new JoystickButton(operator, 2).whileTrue(new ElevatorDownCommand(elevatorSubsytem));
+        new JoystickButton(driver, 3).whileTrue(new CleanerGetInCommand(cleaner));
+        new JoystickButton(driver, 4).whileTrue(new CleanerGetOutCommand(cleaner));
         new JoystickButton(driver, 5).whileTrue(new IntakeCoralCommand(gripperSubsystem));
         new JoystickButton(driver, 6).whileTrue(new OuttakeCoralCommand(gripperSubsystem));
     }
