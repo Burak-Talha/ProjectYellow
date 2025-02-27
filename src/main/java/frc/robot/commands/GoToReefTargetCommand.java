@@ -4,35 +4,26 @@
 
 package frc.robot.commands;
 
-import java.lang.reflect.Field;
 import java.util.Arrays;
-
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.FieldConstants;
 import frc.robot.RobotContainer.TargetAB;
-import frc.robot.commands.GoToTargetCommand.TargetType;
 import frc.robot.subsystems.SwerveSubsystem;
-import frc.robot.subsystems.Vision;
+import frc.robot.subsystems.VisionSubsystem;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class GoToReefTargetCommand extends Command {
 
   SwerveSubsystem swerveSubsystem;
-  Vision vision;
+  VisionSubsystem vision;
   TargetAB targetAB;
   int aprilTagId = -1;
   
 
   /** Creates a new GoToReefTargetCommand. */
-  public GoToReefTargetCommand(SwerveSubsystem swerveSubsystem, Vision vision, TargetAB targetAB) {
+  public GoToReefTargetCommand(SwerveSubsystem swerveSubsystem, VisionSubsystem vision, TargetAB targetAB) {
     this.targetAB = targetAB;
     this.swerveSubsystem = swerveSubsystem;
     this.vision = vision;
@@ -51,13 +42,8 @@ public class GoToReefTargetCommand extends Command {
   @Override
   public void execute() {
     Pose2d currentTarget = null;
-    Pose2d[] targetList = null;
     try{
-      if(DriverStation.getAlliance().get()==Alliance.Red){
-        targetList = FieldConstants.kReefRedApriltags;
-      }else{
-        targetList = FieldConstants.kReefBlueApriltags;
-      }
+
         if(targetAB == TargetAB.A){
           currentTarget = Arrays.asList(swerveSubsystem.getDeployReefTarget()).stream().filter(s -> s.aprilTagId==nearestAprilTagId).filter(s -> s.targetAB==TargetAB.A).findFirst().get().pose2d;
         }else if(targetAB == TargetAB.B){

@@ -16,7 +16,6 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -30,9 +29,6 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -56,10 +52,6 @@ public class SwerveSubsystem extends SubsystemBase {
     AprilTagFieldLayout aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape);
     Translation3d robotpose;
     Pose3d pose3d = new Pose3d();
-
-    // Limelight veri alımı için gerekli girişler
-    private final NetworkTable limelightTable = NetworkTableInstance.getDefault().getTable("limelight");
-    private final NetworkTableEntry botpose = limelightTable.getEntry("botpose");
 
     private static final Matrix<N3, N1> visionMeasurementStdDevs = VecBuilder.fill(0.0000003, 0.000003, Math.toRadians(10));
     private static final Matrix<N3,N1> localMeasurementStdDevs = VecBuilder.fill(0.2, 0.2, Math.toRadians(3));
@@ -208,7 +200,7 @@ public class SwerveSubsystem extends SubsystemBase {
         return Rotation2d.fromDegrees(gyro.getYaw().getValueAsDouble());
     }
 
-        // Range : 0-360+ - 0-(-360) continous
+    // Range : 0-360+ - 0-(-360) continous
     public double getGyroAngle(){
         if(gyro.getAngle() < 0){
             double temp_angle = gyro.getAngle() % 360;

@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -19,48 +20,45 @@ public class ElevatorSubsytem extends SubsystemBase {
   private SparkMax rightMax = new SparkMax(Constants.ElevatorConstants.RIGHT_ELEVATOR_ID, MotorType.kBrushless);
   private PIDController elevatorPidController = new PIDController(Constants.ElevatorConstants.KP, Constants.ElevatorConstants.KI, Constants.ElevatorConstants.KD);
   private RelativeEncoder leftRelativeEncoder;
-  private RelativeEncoder rightRelativeEncoder;
 
-  private DesiredElevatorPosition currentDesiredElevatorPosition;
-  private double elevatorHeightSetpoint = Constants.ElevatorConstants.DEFAULT_ELEVATOR_HEIGHT;
+  private double currentElevatorHeight = 0;
+  private double elevatorHeightSetpoint = Constants.ElevatorConstants.L1_ELEVATOR_HEIGHT;
 
   public enum DesiredElevatorPosition{
-    L4, L3, L2, DEFAULT_ELEVATOR_HEIGHT
+    L4, L3, L2, L1
   }
 
   /** Creates a new ElevatorSubsytem. */
   public ElevatorSubsytem() {
     leftRelativeEncoder = leftMax.getEncoder();
-    rightRelativeEncoder = rightMax.getEncoder();
+    leftRelativeEncoder.setPosition(0);
+    currentElevatorHeight = Constants.ElevatorConstants.L1_ELEVATOR_HEIGHT;
   }
 
   @Override
   public void periodic() {
     SmartDashboard.putNumber("Raw left encoder data(position):", leftRelativeEncoder. getPosition());
     SmartDashboard.putNumber("Left encoder data(in meters):", leftRelativeEncoder.getPosition()*Constants.ElevatorConstants.POSITION_2_DISTANCE);
+    // Calculate the current elevator height
+    currentElevatorHeight = leftRelativeEncoder.getPosition()*Constants.ElevatorConstants.POSITION_2_DISTANCE;
     // Will be added the pid logic
-    //runMotors(calculateDemand());
-  }
-
-  public double calculateDemand(){
-    return elevatorPidController.calculate(getLeftPosition(), elevatorHeightSetpoint);
+    //calculateDemand();
   }
 
   public void setDesiredElevatorPosition(DesiredElevatorPosition desiredElevatorPosition){
-    this.currentDesiredElevatorPosition = desiredElevatorPosition;
-
-    if(currentDesiredElevatorPosition==DesiredElevatorPosition.DEFAULT_ELEVATOR_HEIGHT){
-      elevatorHeightSetpoint = Constants.ElevatorConstants.DEFAULT_ELEVATOR_HEIGHT;
-    }else if(currentDesiredElevatorPosition==DesiredElevatorPosition.L2){
+    if(desiredElevatorPosition==DesiredElevatorPosition.L1){
+      elevatorHeightSetpoint = Constants.ElevatorConstants.L1_ELEVATOR_HEIGHT;
+    }else if(desiredElevatorPosition==DesiredElevatorPosition.L2){
       elevatorHeightSetpoint = Constants.ElevatorConstants.L2_ELEVATOR_HEIGHT;
-    }else if(currentDesiredElevatorPosition==DesiredElevatorPosition.L3){
+    }else if(desiredElevatorPosition==DesiredElevatorPosition.L3){
       elevatorHeightSetpoint = Constants.ElevatorConstants.L3_ELEVATOR_HEIGHT;
     }else{
       elevatorHeightSetpoint = Constants.ElevatorConstants.L4_ELEVATOR_HEIGHT;
     }
   }
 
-  public void runMotors(double demand){
+  public void calculateDemand(){
+    double demand = elevatorPidController.calculate(getLeftPosition(), elevatorHeightSetpoint);
     leftMax.set(demand);
     rightMax.set(demand);
   }
@@ -81,7 +79,7 @@ public class ElevatorSubsytem extends SubsystemBase {
   }
 
   public boolean atSetpoint(){
-    return elevatorPidController.atSetpoint();
+    return MathUtil.isNear(elevatorHeightSetpoint, currentElevatorHeight, 0.05);
   }
 
   public double getLeftDistance(){

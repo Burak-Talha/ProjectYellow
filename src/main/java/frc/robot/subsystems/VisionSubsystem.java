@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Vision extends SubsystemBase {
+public class VisionSubsystem extends SubsystemBase {
 
     // NetworkTable referansları
     private final NetworkTable limelightTable = NetworkTableInstance.getDefault().getTable("limelight");
@@ -28,7 +28,7 @@ public class Vision extends SubsystemBase {
     // Tüm AprilTag'lerin sabit saha üzerindeki pozisyonları
     private final Map<Integer, Pose2d> aprilTagMap = new HashMap<>();
 
-    public Vision() {
+    public VisionSubsystem() {
         initializeAprilTags();
     }
 

@@ -5,20 +5,19 @@ import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.PS5Controller;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.commands.*;
+import frc.robot.commands.TeleopSwerve;
 import frc.robot.commands.CleanerCommands.CleanerGetInCommand;
 import frc.robot.commands.CleanerCommands.CleanerGetOutCommand;
 import frc.robot.commands.ElevatorCommands.ElevatorDownCommand;
 import frc.robot.commands.ElevatorCommands.ElevatorUpCommand;
+import frc.robot.commands.ElevatorCommands.RaiseElevatorCommand;
 import frc.robot.commands.GripperCommands.IntakeCoralCommand;
 import frc.robot.commands.GripperCommands.OuttakeCoralCommand;
 import frc.robot.subsystems.*;
+import frc.robot.subsystems.ElevatorSubsytem.DesiredElevatorPosition;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -28,6 +27,7 @@ import frc.robot.subsystems.*;
  */
 public class RobotContainer {
 
+    /* Target Options */
     public enum TargetAB{
         A, B
     }
@@ -36,21 +36,11 @@ public class RobotContainer {
     private final Joystick driver = new Joystick(0);
     private final Joystick operator = new Joystick(1);
 
-    /* Drive Controls */
-    private final int translationAxis = XboxController.Axis.kLeftY.value;
-    private final int strafeAxis = XboxController.Axis.kLeftX.value;
-    private final int rotationAxis = XboxController.Axis.kRightX.value;
-
-    /* Driver Buttons */
-    private final JoystickButton zeroGyro = new JoystickButton(driver, XboxController.Button.kY.value);
-    private final JoystickButton robotCentric = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
-
     /* Subsystems */
     private final SwerveSubsystem s_Swerve = new SwerveSubsystem();
-    private final Vision s_Vision = new Vision();
-    ElevatorSubsytem elevatorSubsytem = new ElevatorSubsytem();
-    GripperSubsystem gripperSubsystem = new GripperSubsystem();
-    Cleaner cleaner = new Cleaner();
+    private final ElevatorSubsytem elevatorSubsytem = new ElevatorSubsytem();
+    private final GripperSubsystem gripperSubsystem = new GripperSubsystem();
+    private final CleanerSubsystem cleaner = new CleanerSubsystem();
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
@@ -60,7 +50,7 @@ public class RobotContainer {
                 () -> driver.getRawAxis(1), 
                 () -> driver.getRawAxis(0), 
                 () -> driver.getRawAxis(4), 
-                () -> robotCentric.getAsBoolean()
+                () -> true
             )
         );
 
@@ -77,12 +67,16 @@ public class RobotContainer {
     private void configureButtonBindings() {
         // Unit Test commands
         // Go to human intake command
-        /*
+        /* 
         // Go to coprocessor commannd
         new JoystickButton(driver, Button.kA.value).whileTrue(new GoToCoProcessorCommand(s_Swerve).repeatedly());
         // Go to reef target commands
         new JoystickButton(driver, Button.kLeftBumper.value).whileTrue(new GoToReefTargetCommand(s_Swerve, s_Vision, TargetAB.A));
-        new JoystickButton(driver, Button.kRightBumper.value).whileTrue(new GoToReefTargetCommand(s_Swerve, s_Vision, TargetAB.B));*/
+        new JoystickButton(driver, Button.kRightBumper.value).whileTrue(new GoToReefTargetCommand(s_Swerve, s_Vision, TargetAB.B));
+        // Go to human intake commands
+        new JoystickButton(driver, Button.kA.value).whileTrue(new GoToHumanIntakeCommand(s_Swerve, TargetAB.A));
+        new JoystickButton(driver, Button.kB.value).whileTrue(new GoToHumanIntakeCommand(s_Swerve, TargetAB.B));
+        */
 
         // Driver Buttons
       /* new JoystickButton(driver, Button.kY.value).whileTrue(new ResetOdometryCommand(s_Swerve));
@@ -99,6 +93,12 @@ public class RobotContainer {
         new JoystickButton(driver, 4).whileTrue(new CleanerGetOutCommand(cleaner));
         new JoystickButton(driver, 5).whileTrue(new IntakeCoralCommand(gripperSubsystem));
         new JoystickButton(driver, 6).whileTrue(new OuttakeCoralCommand(gripperSubsystem));
+
+        // Elevator PID test
+        new JoystickButton(operator, 1).whileTrue(new RaiseElevatorCommand(elevatorSubsytem, DesiredElevatorPosition.L1));
+        new JoystickButton(operator, 2).whileTrue(new RaiseElevatorCommand(elevatorSubsytem, DesiredElevatorPosition.L2));
+        new JoystickButton(operator, 3).whileTrue(new RaiseElevatorCommand(elevatorSubsytem, DesiredElevatorPosition.L3));
+        new JoystickButton(operator, 4).whileTrue(new RaiseElevatorCommand(elevatorSubsytem, DesiredElevatorPosition.L4));
     }
 
     /**

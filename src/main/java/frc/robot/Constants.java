@@ -167,7 +167,7 @@ public final class Constants {
         public static final double L4_ELEVATOR_HEIGHT = 0;
         public static final double L3_ELEVATOR_HEIGHT = 0;
         public static final double L2_ELEVATOR_HEIGHT = 0;
-        public static final double DEFAULT_ELEVATOR_HEIGHT = 0;
+        public static final double L1_ELEVATOR_HEIGHT = 0;
     }
 
     public static final class GripperConstants{
@@ -179,19 +179,5 @@ public final class Constants {
         public static final int CLEANER_ROT_SPARKMAX_ID = 3;
         public static final int CLEANER_POW_SPARKMAX_ID = 35;
     }
-
-    public static final int ArmID = 2;
-    public static final int Arm_CancoderID = 11;
-    
-    public static final int ArmWristID = 3;
-    public static final int Arm_Wrist_CancoderID = 12;
-    
-    public static final int Arm_IntakeID = 4;
-    
-    public static final int Coral_Intake_TurnID = 5;
-    public static final int Coral_Intake_SpeedID = 6;
-    
-    public static final int Climb_HubID = 7;
-    public static final int Climb_GripperID = 8;
     
 }

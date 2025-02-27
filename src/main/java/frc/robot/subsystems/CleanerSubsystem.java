@@ -9,12 +9,12 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class Cleaner extends SubsystemBase {
+public class CleanerSubsystem extends SubsystemBase {
 
   SparkMax cleaner = new SparkMax(35, MotorType.kBrushless);
 
   /** Creates a new Cleaner. */
-  public Cleaner() {}
+  public CleanerSubsystem() {}
 
   @Override
   public void periodic() {
