@@ -20,6 +20,7 @@ public class ElevatorSubsytem extends SubsystemBase {
   private SparkMax rightMax = new SparkMax(Constants.ElevatorConstants.RIGHT_ELEVATOR_ID, MotorType.kBrushless);
   private PIDController elevatorPidController = new PIDController(Constants.ElevatorConstants.KP, Constants.ElevatorConstants.KI, Constants.ElevatorConstants.KD);
   private RelativeEncoder leftRelativeEncoder;
+  private RelativeEncoder rightRelativeEncoder;
 
   private double currentElevatorHeight = 0;
   private double elevatorHeightSetpoint = Constants.ElevatorConstants.L1_ELEVATOR_HEIGHT;
@@ -30,19 +31,20 @@ public class ElevatorSubsytem extends SubsystemBase {
 
   /** Creates a new ElevatorSubsytem. */
   public ElevatorSubsytem() {
-    leftRelativeEncoder = leftMax.getEncoder();
-    leftRelativeEncoder.setPosition(0);
+    rightRelativeEncoder = rightMax.getEncoder();
+    rightRelativeEncoder.setPosition(0);
     currentElevatorHeight = Constants.ElevatorConstants.L1_ELEVATOR_HEIGHT;
   }
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Raw left encoder data(position):", leftRelativeEncoder. getPosition());
-    SmartDashboard.putNumber("Left encoder data(in meters):", leftRelativeEncoder.getPosition()*Constants.ElevatorConstants.POSITION_2_DISTANCE);
+    SmartDashboard.putNumber("Raw right encoder data(position):", rightRelativeEncoder. getPosition());
+    SmartDashboard.putNumber("Right encoder data(in meters):", rightRelativeEncoder.getPosition()*Constants.ElevatorConstants.POSITION_2_DISTANCE);
+    
     // Calculate the current elevator height
-    currentElevatorHeight = leftRelativeEncoder.getPosition()*Constants.ElevatorConstants.POSITION_2_DISTANCE;
+    currentElevatorHeight = rightRelativeEncoder.getPosition()*Constants.ElevatorConstants.POSITION_2_DISTANCE;
     // Will be added the pid logic
-    //calculateDemand();
+    calculateDemand();
   }
 
   public void setDesiredElevatorPosition(DesiredElevatorPosition desiredElevatorPosition){
@@ -58,18 +60,18 @@ public class ElevatorSubsytem extends SubsystemBase {
   }
 
   public void calculateDemand(){
-    double demand = elevatorPidController.calculate(getLeftPosition(), elevatorHeightSetpoint);
-    leftMax.set(demand);
+    double demand = elevatorPidController.calculate(getRightDistance(), elevatorHeightSetpoint);
+    leftMax.set(-demand);
     rightMax.set(demand);
   }
 
   public void elevatorUp(){
-    leftMax.set(-0.3);
+    leftMax.set(0.3);
     rightMax.set(-0.3);
   }
 
   public void elevatorDown(){
-    leftMax.set(0.3);
+    leftMax.set(-0.3);
     rightMax.set(0.3);
   }
 
@@ -82,8 +84,8 @@ public class ElevatorSubsytem extends SubsystemBase {
     return MathUtil.isNear(elevatorHeightSetpoint, currentElevatorHeight, 0.05);
   }
 
-  public double getLeftDistance(){
-    return leftRelativeEncoder.getPosition()*Constants.ElevatorConstants.POSITION_2_DISTANCE;
+  public double getRightDistance(){
+    return rightRelativeEncoder.getPosition()*Constants.ElevatorConstants.POSITION_2_DISTANCE;
   }
 
   public double getLeftPosition(){
