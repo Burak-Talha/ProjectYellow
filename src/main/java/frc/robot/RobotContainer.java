@@ -10,6 +10,10 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.commands.IntakeCommand;
+import frc.robot.commands.IntakeDownCommand;
+import frc.robot.commands.IntakeUpCommand;
+import frc.robot.commands.OuttakeCommand;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.commands.CleanerCommands.CleanerGetInCommand;
 import frc.robot.commands.CleanerCommands.CleanerGetOutCommand;
@@ -43,6 +47,7 @@ public class RobotContainer {
     private final ElevatorSubsytem elevatorSubsytem = new ElevatorSubsytem();
     private final GripperSubsystem gripperSubsystem = new GripperSubsystem();
     private final CleanerSubsystem cleaner = new CleanerSubsystem();
+    private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
@@ -93,14 +98,20 @@ public class RobotContainer {
         new JoystickButton(driver, 2).whileTrue(new ElevatorDownCommand(elevatorSubsytem));
         new JoystickButton(driver, 3).whileTrue(new CleanerGetInCommand(cleaner));
         new JoystickButton(driver, 4).whileTrue(new CleanerGetOutCommand(cleaner));
-        new JoystickButton(operator, 5).whileTrue(new IntakeCoralCommand(gripperSubsystem));
-        new JoystickButton(operator, 6).whileTrue(new OuttakeCoralCommand(gripperSubsystem));
+        new JoystickButton(driver, 5).whileTrue(new IntakeCoralCommand(gripperSubsystem));
+        new JoystickButton(driver, 6).whileTrue(new OuttakeCoralCommand(gripperSubsystem));
 
         // Elevator PID test
         new JoystickButton(operator, 1).whileTrue(new RaiseElevatorCommand(elevatorSubsytem, DesiredElevatorPosition.L1));
         new JoystickButton(operator, 2).whileTrue(new RaiseElevatorCommand(elevatorSubsytem, DesiredElevatorPosition.L2));
         new JoystickButton(operator, 3).whileTrue(new RaiseElevatorCommand(elevatorSubsytem, DesiredElevatorPosition.L3));
-        new JoystickButton(operator, 4).whileTrue(new RaiseElevatorCommand(elevatorSubsytem, DesiredElevatorPosition.L4));
+        //new JoystickButton(operator, 4).whileTrue(new RaiseElevatorCommand(elevatorSubsytem, DesiredElevatorPosition.L4));
+
+        /*new JoystickButton(operator, 3).whileTrue(new IntakeCommand(intakeSubsystem));
+        new JoystickButton(operator, 4).whileTrue(new OuttakeCommand(intakeSubsystem));
+        */
+        new JoystickButton(operator, 5).whileTrue(new IntakeUpCommand(intakeSubsystem));
+        new JoystickButton(operator, 6).whileTrue(new IntakeDownCommand(intakeSubsystem));
     }
 
     /**

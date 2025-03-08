@@ -182,8 +182,8 @@ public final class Constants {
     }
     
     public static final class IntakeConstants{
-        public static final int INTAKE_ROT_SPARKMAX_ID = 0;
-        public static final int INTAKE_POW_SPARKMAX_ID = 0;
+        public static final int INTAKE_ROT_SPARKMAX_ID = 37;
+        public static final int INTAKE_POW_SPARKMAX_ID = 33;
         public static final double POSITION_2_DEGREE = 0;
     }
 }

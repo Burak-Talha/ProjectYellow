@@ -25,7 +25,7 @@ public class IntakeSubsystem extends SubsystemBase {
     rotRelativeEncoder = rotSparkMax.getEncoder();
 
     // Set encoder value to start pose
-    rotRelativeEncoder.setPosition(0);
+   // rotRelativeEncoder.setPosition(0);
   }
 
   @Override
@@ -34,11 +34,19 @@ public class IntakeSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Current intake degree position", getRotationDegree());
   }
 
-  public void getIn(){
+  public void intakeUp(){
+    rotSparkMax.set(0.3);
+  }
+
+  public void intakeDown(){
+    rotSparkMax.set(-0.3);
+  }
+
+  public void intake(){
     powSparkMax.set(0.5);
   }
 
-  public void getOut(){
+  public void outtake(){
     powSparkMax.set(-0.5);
   }
 
