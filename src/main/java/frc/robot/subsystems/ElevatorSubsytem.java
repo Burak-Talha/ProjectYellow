@@ -5,7 +5,10 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.revrobotics.RelativeEncoder;
@@ -18,9 +21,28 @@ public class ElevatorSubsytem extends SubsystemBase {
 
   private SparkMax leftMax = new SparkMax(Constants.ElevatorConstants.LEFT_ELEVATOR_ID, MotorType.kBrushless);
   private SparkMax rightMax = new SparkMax(Constants.ElevatorConstants.RIGHT_ELEVATOR_ID, MotorType.kBrushless);
-  private PIDController elevatorPidController = new PIDController(Constants.ElevatorConstants.KP, Constants.ElevatorConstants.KI, Constants.ElevatorConstants.KD);
+
   private RelativeEncoder leftRelativeEncoder;
   private RelativeEncoder rightRelativeEncoder;
+
+  // Define the controllers to control mechanism
+  private PIDController elevatorPidController = new PIDController(Constants.ElevatorConstants.KP, Constants.ElevatorConstants.KI, Constants.ElevatorConstants.KD);
+
+  private ElevatorFeedforward elevatorFeedforwardController =
+  new ElevatorFeedforward(Constants.ElevatorConstants.KS,
+                          Constants.ElevatorConstants.KG,
+                          Constants.ElevatorConstants.KV,
+                          Constants.ElevatorConstants.KA);
+
+  private TrapezoidProfile.Constraints profiledFeedbackConstraints = 
+  new TrapezoidProfile.Constraints(Constants.ElevatorConstants.MAX_VELOCITY,
+                                   Constants.ElevatorConstants.MAX_ACCELERATION);
+
+  private ProfiledPIDController profiledElevatorPidController =
+  new ProfiledPIDController(Constants.ElevatorConstants.KP,
+                            Constants.ElevatorConstants.KI,
+                            Constants.ElevatorConstants.KD,
+                            profiledFeedbackConstraints);
 
   private double currentElevatorHeight = 0;
   private double elevatorHeightSetpoint = Constants.ElevatorConstants.L1_ELEVATOR_HEIGHT;
@@ -38,13 +60,18 @@ public class ElevatorSubsytem extends SubsystemBase {
 
   @Override
   public void periodic() {
+    // Print the sensor values
     SmartDashboard.putNumber("Raw right encoder data(position):", rightRelativeEncoder. getPosition());
     SmartDashboard.putNumber("Right encoder data(in meters):", rightRelativeEncoder.getPosition()*Constants.ElevatorConstants.POSITION_2_DISTANCE);
     
     // Calculate the current elevator height
     currentElevatorHeight = rightRelativeEncoder.getPosition()*Constants.ElevatorConstants.POSITION_2_DISTANCE;
+
     // Will be added the pid logic
-    calculateDemand();
+    calculateFeedBackDemand();
+    // Trials 1-) Profiled PID 2-) Profiled with feed forward mechanism
+    /*calculateProfiledDemand();
+    calculateProfiledFFDemand();*/
   }
 
   public void setDesiredElevatorPosition(DesiredElevatorPosition desiredElevatorPosition){
@@ -59,10 +86,21 @@ public class ElevatorSubsytem extends SubsystemBase {
     }
   }
 
-  public void calculateDemand(){
+  public void calculateFeedBackDemand(){
     double demand = elevatorPidController.calculate(getRightDistance(), elevatorHeightSetpoint);
     leftMax.set(-demand);
     rightMax.set(demand);
+  }
+
+  public void calculateProfiledDemand(){
+    double demand = profiledElevatorPidController.calculate(getRightDistance(), elevatorHeightSetpoint);
+    applyDemand(demand);
+  }
+
+  public void calculateProfiledFFDemand(){
+    double demand = profiledElevatorPidController.calculate(getRightDistance(), elevatorHeightSetpoint) +
+                    elevatorFeedforwardController.calculate(profiledElevatorPidController.getSetpoint().velocity);
+    applyDemand(demand);
   }
 
   public void elevatorUp(){
@@ -76,8 +114,13 @@ public class ElevatorSubsytem extends SubsystemBase {
   }
 
   public void stopMotors(){
-    leftMax.set(0);
-    rightMax.set(0);
+    leftMax.stopMotor();
+    rightMax.stopMotor();
+  }
+
+  public void applyDemand(double demand){
+    leftMax.setVoltage(-demand);
+    rightMax.setVoltage(demand);
   }
 
   public boolean atSetpoint(){

@@ -3,17 +3,13 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.IntakeDownCommand;
 import frc.robot.commands.IntakeUpCommand;
-import frc.robot.commands.OuttakeCommand;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.commands.CleanerCommands.CleanerGetInCommand;
 import frc.robot.commands.CleanerCommands.CleanerGetOutCommand;
@@ -101,12 +97,11 @@ public class RobotContainer {
         new JoystickButton(driver, 5).whileTrue(new IntakeCoralCommand(gripperSubsystem));
         new JoystickButton(driver, 6).whileTrue(new OuttakeCoralCommand(gripperSubsystem));
 
-        // Elevator PID test
+        // Elevator PID test  
         new JoystickButton(operator, 1).whileTrue(new RaiseElevatorCommand(elevatorSubsytem, DesiredElevatorPosition.L1));
         new JoystickButton(operator, 2).whileTrue(new RaiseElevatorCommand(elevatorSubsytem, DesiredElevatorPosition.L2));
         new JoystickButton(operator, 3).whileTrue(new RaiseElevatorCommand(elevatorSubsytem, DesiredElevatorPosition.L3));
-        //new JoystickButton(operator, 4).whileTrue(new RaiseElevatorCommand(elevatorSubsytem, DesiredElevatorPosition.L4));
-
+        new JoystickButton(operator, 4).whileTrue(new RaiseElevatorCommand(elevatorSubsytem, DesiredElevatorPosition.L4));
         /*new JoystickButton(operator, 3).whileTrue(new IntakeCommand(intakeSubsystem));
         new JoystickButton(operator, 4).whileTrue(new OuttakeCommand(intakeSubsystem));
         */

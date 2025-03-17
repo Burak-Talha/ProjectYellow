@@ -8,20 +8,25 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
+import edu.wpi.first.math.controller.ArmFeedforward;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class CleanerSubsystem extends SubsystemBase {
 
-  SparkMax cleanerRot;
-  SparkMax cleanerPow;
-  RelativeEncoder rotRelativeEncoder;
+  SparkMax cleanerRot = new SparkMax(Constants.CleanerConstants.CLEANER_ROT_SPARKMAX_ID, MotorType.kBrushless);
+
+  private RelativeEncoder rotRelativeEncoder;
+  private PIDController rotController = new PIDController(getPosition(), getRotationDegree(), getPosition());
+  private ProfiledPIDController profiledRotController = new ProfiledPIDController(Constants.CleanerConstants.KP, getRotationDegree(), getPosition(), null);
+  private ArmFeedforward armFeedforward = new ArmFeedforward(Constants.CleanerConstants.KS, Constants.CleanerConstants.KG, Constants.CleanerConstants.KV, Constants.CleanerConstants.KA);
+
 
   /** Creates a new Cleaner. */
   public CleanerSubsystem() {
-    cleanerRot = new SparkMax(Constants.CleanerConstants.CLEANER_ROT_SPARKMAX_ID, MotorType.kBrushless);
-    cleanerPow = new SparkMax(Constants.CleanerConstants.CLEANER_POW_SPARKMAX_ID, MotorType.kBrushless);
     rotRelativeEncoder = cleanerRot.getEncoder();
   }
 
@@ -29,14 +34,23 @@ public class CleanerSubsystem extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     SmartDashboard.putNumber("Get rotation degree :", getRotationDegree());
+
   }
 
   public void getIn(){
-    cleanerPow.set(0.5);
+    cleanerRot.set(0.15);
   }
 
   public void getOut(){
-    cleanerPow.set(-0.5);
+    cleanerRot.set(-0.15);
+  }
+
+  public void calculateFeedBackDemand(){
+
+  }
+
+  public void applyDemand(double demand){
+    cleanerRot.setVoltage(demand);
   }
 
   public double getRotationDegree(){
@@ -48,12 +62,7 @@ public class CleanerSubsystem extends SubsystemBase {
   }
 
   public void stopMotors(){
-    stopPowMotor();
     stopRotMotor();
-  }
-
-  public void stopPowMotor(){
-    cleanerPow.stopMotor();
   }
 
   public void stopRotMotor(){
