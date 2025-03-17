@@ -154,20 +154,29 @@ public final class Constants {
         public static final int LEFT_ELEVATOR_ID = 36;
         public static final int RIGHT_ELEVATOR_ID = 34;
         public static final int ELEVATOR_CANCODER_ID = 10;
+
         public static final double KP = 0.005;
         public static final double KI = 0;
         public static final double KD = 0.0001;
 
+        public static final double KS = 0;
+        public static final double KV = 0;
+        public static final double KG = 0;
+        public static final double KA = 0;
+        
         private static final double GEAR_BOX_RATIO = 10.71;
         private static final double TRANSMISSION_RATIO = 2;
         private static final double GEAR_RADIUS = 2.5;
         private static final double GEAR_CIRCUMFERENCE = 2*Math.PI*GEAR_RADIUS;
         public static final double POSITION_2_DISTANCE = (1/GEAR_BOX_RATIO)*TRANSMISSION_RATIO*GEAR_CIRCUMFERENCE;
         
-        public static final double L4_ELEVATOR_HEIGHT = -280;
-        public static final double L3_ELEVATOR_HEIGHT = -170;
-        public static final double L2_ELEVATOR_HEIGHT = -70;
+        public static final double L4_ELEVATOR_HEIGHT = -220;
+        public static final double L3_ELEVATOR_HEIGHT = -130;
+        public static final double L2_ELEVATOR_HEIGHT = -75;
         public static final double L1_ELEVATOR_HEIGHT = 0;
+
+        public static final double MAX_VELOCITY = 5;
+        public static final double MAX_ACCELERATION = 10;
     }
 
     public static final class GripperConstants{
@@ -178,7 +187,17 @@ public final class Constants {
     public static final class CleanerConstants{
         public static final int CLEANER_ROT_SPARKMAX_ID = 3;
         public static final int CLEANER_POW_SPARKMAX_ID = 35;
-        public static final double POSITION_2_DEGREE = 0;
+        public static final double GEAR_RATIO = 0;
+        public static final double POSITION_2_DEGREE = 360/GEAR_RATIO;
+
+        public static final double KP = 0;
+        public static final double KI = 0;
+        public static final double KD = 0;
+        
+        public static final double KG = 0;
+        public static final double KV = 0;
+        public static final double KA = 0;
+        public static final double KS = 0;
     }
     
     public static final class IntakeConstants{
