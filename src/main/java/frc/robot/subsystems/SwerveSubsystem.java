@@ -53,6 +53,7 @@ public class SwerveSubsystem extends SubsystemBase {
     Translation3d robotpose;
     Pose3d pose3d = new Pose3d();
 
+    // If u gonna trust your data, decrease the coeffecients. Otherwise increase it.
     private static final Matrix<N3, N1> visionMeasurementStdDevs = VecBuilder.fill(0.0000003, 0.000003, Math.toRadians(10));
     private static final Matrix<N3,N1> localMeasurementStdDevs = VecBuilder.fill(0.2, 0.2, Math.toRadians(3));
 
@@ -226,7 +227,7 @@ public class SwerveSubsystem extends SubsystemBase {
             swerveDrivePoseEstimator.addVisionMeasurement(poseEstimate2.pose, poseEstimate2.timestampSeconds);
         }*/
     }catch(Exception exception){
-        exception.printStackTrace();
+        
     }
     }
 
