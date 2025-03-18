@@ -26,7 +26,10 @@ public class ElevatorSubsytem extends SubsystemBase {
   private RelativeEncoder rightRelativeEncoder;
 
   // Define the controllers to control mechanism
-  private PIDController elevatorPidController = new PIDController(Constants.ElevatorConstants.KP, Constants.ElevatorConstants.KI, Constants.ElevatorConstants.KD);
+  private PIDController elevatorPidController =
+  new PIDController(Constants.ElevatorConstants.KP,
+                    Constants.ElevatorConstants.KI,
+                    Constants.ElevatorConstants.KD);
 
   private ElevatorFeedforward elevatorFeedforwardController =
   new ElevatorFeedforward(Constants.ElevatorConstants.KS,

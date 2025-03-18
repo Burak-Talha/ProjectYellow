@@ -11,6 +11,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -18,12 +19,31 @@ import frc.robot.Constants;
 public class CleanerSubsystem extends SubsystemBase {
 
   SparkMax cleanerRot = new SparkMax(Constants.CleanerConstants.CLEANER_ROT_SPARKMAX_ID, MotorType.kBrushless);
-
   private RelativeEncoder rotRelativeEncoder;
-  private PIDController rotController = new PIDController(getPosition(), getRotationDegree(), getPosition());
-  private ProfiledPIDController profiledRotController = new ProfiledPIDController(Constants.CleanerConstants.KP, getRotationDegree(), getPosition(), null);
-  private ArmFeedforward armFeedforward = new ArmFeedforward(Constants.CleanerConstants.KS, Constants.CleanerConstants.KG, Constants.CleanerConstants.KV, Constants.CleanerConstants.KA);
 
+  private PIDController rotController = new PIDController(Constants.CleanerConstants.KP, Constants.CleanerConstants.KI, Constants.CleanerConstants.KD);
+
+  private TrapezoidProfile.Constraints profiledFeedbackConstraints = 
+  new TrapezoidProfile.Constraints(Constants.CleanerConstants.MAX_VELOCITY,
+                                   Constants.CleanerConstants.MAX_ACCELERATION);
+
+  private ProfiledPIDController profiledRotController = new ProfiledPIDController(Constants.CleanerConstants.KP,
+                                                                                  Constants.CleanerConstants.KI,
+                                                                                  Constants.CleanerConstants.KD,
+                                                                                  profiledFeedbackConstraints);
+
+  private ArmFeedforward armFeedforward = new ArmFeedforward(Constants.CleanerConstants.KS,
+                                                             Constants.CleanerConstants.KG,
+                                                             Constants.CleanerConstants.KV,
+                                                             Constants.CleanerConstants.KA);
+
+
+  public enum DesiredCleanerPosition{
+    LOWER_ALGAE, UPPER_ALGAE
+  }
+
+  double currentArmDegree = 0;
+  double armDegreeSetpoint = Constants.CleanerConstants.LOWER_ALGAE_DEGREE;
 
   /** Creates a new Cleaner. */
   public CleanerSubsystem() {
@@ -37,20 +57,39 @@ public class CleanerSubsystem extends SubsystemBase {
 
   }
 
+  public void setDesiredPosition(DesiredCleanerPosition desiredCleanerPosition){
+    if(desiredCleanerPosition==DesiredCleanerPosition.LOWER_ALGAE){
+      currentArmDegree = Constants.CleanerConstants.LOWER_ALGAE_DEGREE;
+    }else if(desiredCleanerPosition==DesiredCleanerPosition.UPPER_ALGAE){
+      currentArmDegree = Constants.CleanerConstants.UPPER_ALGAE_DEGREE;
+    }
+  }
+
+  public void calculateFeedbackDemand(){
+    double demand = rotController.calculate(getRotationDegree(), armDegreeSetpoint);
+    applyDemand(demand);
+  }
+
+  public void calculateProfiledDemand(){
+    double demand = profiledRotController.calculate(getRotationDegree(), armDegreeSetpoint);
+    applyDemand(demand);
+  }
+
+  public void calculateProfiledFFDemand(){
+    double demand = profiledRotController.calculate(getRotationDegree(), armDegreeSetpoint) + armFeedforward.calculate(Math.toRadians(getRotationDegree()), profiledRotController.getSetpoint().velocity);
+    applyDemand(demand);
+  }
+
+  public void applyDemand(double demand){
+    cleanerRot.setVoltage(demand);
+  }
+
   public void getIn(){
     cleanerRot.set(0.15);
   }
 
   public void getOut(){
     cleanerRot.set(-0.15);
-  }
-
-  public void calculateFeedBackDemand(){
-
-  }
-
-  public void applyDemand(double demand){
-    cleanerRot.setVoltage(demand);
   }
 
   public double getRotationDegree(){

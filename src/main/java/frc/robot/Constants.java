@@ -165,10 +165,10 @@ public final class Constants {
         public static final double KA = 0;
         
         private static final double GEAR_BOX_RATIO = 10.71;
-        private static final double TRANSMISSION_RATIO = 2;
         private static final double GEAR_RADIUS = 2.5;
         private static final double GEAR_CIRCUMFERENCE = 2*Math.PI*GEAR_RADIUS;
-        public static final double POSITION_2_DISTANCE = (1/GEAR_BOX_RATIO)*TRANSMISSION_RATIO*GEAR_CIRCUMFERENCE;
+        public static final double ELEVATOR_DEFAULT_HEIGHT = 0.1;
+        public static final double POSITION_2_DISTANCE = (1/GEAR_BOX_RATIO)*GEAR_CIRCUMFERENCE;
         
         public static final double L4_ELEVATOR_HEIGHT = -220;
         public static final double L3_ELEVATOR_HEIGHT = -130;
@@ -187,8 +187,10 @@ public final class Constants {
     public static final class CleanerConstants{
         public static final int CLEANER_ROT_SPARKMAX_ID = 3;
         public static final int CLEANER_POW_SPARKMAX_ID = 35;
-        public static final double GEAR_RATIO = 0;
-        public static final double POSITION_2_DEGREE = 360/GEAR_RATIO;
+
+        public static final double GEARBOX_RATIO = 0;
+        public static final double PULLEY_RATIO = 0;
+        public static final double POSITION_2_DEGREE = 360/(GEARBOX_RATIO*PULLEY_RATIO);
 
         public static final double KP = 0;
         public static final double KI = 0;
@@ -198,11 +200,36 @@ public final class Constants {
         public static final double KV = 0;
         public static final double KA = 0;
         public static final double KS = 0;
+
+        public static final double MAX_VELOCITY = 0;
+        public static final double MAX_ACCELERATION = 0;
+
+        public static final double DEFAULT_CLEANER_DEGREE = 0;
+        public static final double LOWER_ALGAE_DEGREE = 45;
+        public static final double UPPER_ALGAE_DEGREE = 135;
     }
     
     public static final class IntakeConstants{
         public static final int INTAKE_ROT_SPARKMAX_ID = 37;
         public static final int INTAKE_POW_SPARKMAX_ID = 33;
-        public static final double POSITION_2_DEGREE = 0;
+
+        public static final double ROT_GEAR_RATIO = 0;
+        public static final double POSITION_2_DEGREE = 360/ROT_GEAR_RATIO;
+
+        public static final double KP = 0;
+        public static final double KI = 0;
+        public static final double KD = 0;
+        
+        public static final double KG = 0;
+        public static final double KV = 0;
+        public static final double KA = 0;
+        public static final double KS = 0;
+
+        public static final double MAX_VELOCITY = 0;
+        public static final double MAX_ACCELERATION = 0;
+
+        public static final double DEFAULT_INTAKE_DEGREE = 90;
+        public static final double INTAKE_ALGAE_DEGREE = 60;
+
     }
 }
