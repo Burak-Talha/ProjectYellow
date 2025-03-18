@@ -72,7 +72,7 @@ public final class Constants {
         public static final double angleKD = chosenModule.angleKD;
 
         /* Drive Motor PID Values */
-        public static final double driveKP = 0.3; //TODO: This must be tuned to specific robot  0.12
+        public static final double driveKP = 1; //TODO: This must be tuned to specific robot  0.12
         public static final double driveKI = 0.0;
         public static final double driveKD = 0.0;
         public static final double driveKF = 0.0;
@@ -98,7 +98,7 @@ public final class Constants {
             public static final int driveMotorID = 20;
             public static final int angleMotorID = 21;
             public static final int canCoderID = 32;
-            public static final Rotation2d angleOffset = Rotation2d.fromDegrees(-30);
+            public static final Rotation2d angleOffset = Rotation2d.fromDegrees(147);
             public static final SwerveModuleConstants constants = 
                 new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, angleOffset);
         }
@@ -108,7 +108,7 @@ public final class Constants {
             public static final int driveMotorID = 22;
             public static final int angleMotorID = 23;
             public static final int canCoderID = 31;
-            public static final Rotation2d angleOffset = Rotation2d.fromDegrees(-105);
+            public static final Rotation2d angleOffset = Rotation2d.fromDegrees(70);
             public static final SwerveModuleConstants constants = 
                 new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, angleOffset);
         }
@@ -118,7 +118,7 @@ public final class Constants {
             public static final int driveMotorID = 26;
             public static final int angleMotorID = 27;
             public static final int canCoderID = 33;
-            public static final Rotation2d angleOffset = Rotation2d.fromDegrees(66);
+            public static final Rotation2d angleOffset = Rotation2d.fromDegrees(-110);
             public static final SwerveModuleConstants constants = 
                 new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, angleOffset);
         }
@@ -128,7 +128,7 @@ public final class Constants {
             public static final int driveMotorID = 24;
             public static final int angleMotorID = 25;
             public static final int canCoderID = 30;
-            public static final Rotation2d angleOffset = Rotation2d.fromDegrees(-31);
+            public static final Rotation2d angleOffset = Rotation2d.fromDegrees(150);
             public static final SwerveModuleConstants constants = 
                 new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, angleOffset);
         }
@@ -170,8 +170,8 @@ public final class Constants {
         public static final double ELEVATOR_DEFAULT_HEIGHT = 0.1;
         public static final double POSITION_2_DISTANCE = (1/GEAR_BOX_RATIO)*GEAR_CIRCUMFERENCE;
         
-        public static final double L4_ELEVATOR_HEIGHT = -220;
-        public static final double L3_ELEVATOR_HEIGHT = -130;
+        public static final double L4_ELEVATOR_HEIGHT = -205;
+        public static final double L3_ELEVATOR_HEIGHT = -122.5;
         public static final double L2_ELEVATOR_HEIGHT = -75;
         public static final double L1_ELEVATOR_HEIGHT = 0;
 
@@ -188,8 +188,8 @@ public final class Constants {
         public static final int CLEANER_ROT_SPARKMAX_ID = 3;
         public static final int CLEANER_POW_SPARKMAX_ID = 35;
 
-        public static final double GEARBOX_RATIO = 0;
-        public static final double PULLEY_RATIO = 0;
+        public static final double GEARBOX_RATIO = 5;
+        public static final double PULLEY_RATIO = 1;// This will be known
         public static final double POSITION_2_DEGREE = 360/(GEARBOX_RATIO*PULLEY_RATIO);
 
         public static final double KP = 0;
@@ -213,8 +213,8 @@ public final class Constants {
         public static final int INTAKE_ROT_SPARKMAX_ID = 37;
         public static final int INTAKE_POW_SPARKMAX_ID = 33;
 
-        public static final double ROT_GEAR_RATIO = 0;
-        public static final double POSITION_2_DEGREE = 360/ROT_GEAR_RATIO;
+        public static final double GEARBOX_RATIO = 48;
+        public static final double POSITION_2_DEGREE = 360/GEARBOX_RATIO;
 
         public static final double KP = 0;
         public static final double KI = 0;
