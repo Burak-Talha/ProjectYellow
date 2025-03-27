@@ -5,137 +5,130 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.ElevatorFeedforward;
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.SparkLowLevel.MotorType;
+
+import com.ctre.phoenix6.configs.FeedbackConfigs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.DynamicMotionMagicVoltage;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.controls.VoltageOut;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.GravityTypeValue;
+import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
+import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 
 import frc.robot.Constants;
+import frc.robot.Constants.ElevatorConstants;
 
 public class ElevatorSubsytem extends SubsystemBase {
 
-  private SparkMax leftMax = new SparkMax(Constants.ElevatorConstants.LEFT_ELEVATOR_ID, MotorType.kBrushless);
-  private SparkMax rightMax = new SparkMax(Constants.ElevatorConstants.RIGHT_ELEVATOR_ID, MotorType.kBrushless);
-
-  private RelativeEncoder leftRelativeEncoder;
-  private RelativeEncoder rightRelativeEncoder;
-
-  // Define the controllers to control mechanism
-  private PIDController elevatorPidController =
-  new PIDController(Constants.ElevatorConstants.KP,
-                    Constants.ElevatorConstants.KI,
-                    Constants.ElevatorConstants.KD);
-
-  private ElevatorFeedforward elevatorFeedforwardController =
-  new ElevatorFeedforward(Constants.ElevatorConstants.KS,
-                          Constants.ElevatorConstants.KG,
-                          Constants.ElevatorConstants.KV,
-                          Constants.ElevatorConstants.KA);
-
-  private TrapezoidProfile.Constraints profiledFeedbackConstraints = 
-  new TrapezoidProfile.Constraints(Constants.ElevatorConstants.MAX_VELOCITY,
-                                   Constants.ElevatorConstants.MAX_ACCELERATION);
-
-  private ProfiledPIDController profiledElevatorPidController =
-  new ProfiledPIDController(Constants.ElevatorConstants.KP,
-                            Constants.ElevatorConstants.KI,
-                            Constants.ElevatorConstants.KD,
-                            profiledFeedbackConstraints);
-
   private double currentElevatorHeight = 0;
-  private double elevatorHeightSetpoint = Constants.ElevatorConstants.L1_ELEVATOR_HEIGHT;
+  private double elevatorHeightSetpoint = Constants.ElevatorConstants.ELEVATOR_DEFAULT_HEIGHT;
 
   public enum DesiredElevatorPosition{
-    L4, L3, L2, L1
+    L4, L3, L2, L1, UPPER_ALGAE_CLEAN, LOWER_ALGAE_CLEAN, DEFAULT
   }
+
+  public TalonFX elevatorTalon = new TalonFX(Constants.ElevatorConstants.ELEVATOR_ID);
+  private PositionVoltage positionRequest;
+  private VoltageOut voltageOut = new VoltageOut(0);
+  TalonFXConfiguration ELEVATOR_CONFIG = new TalonFXConfiguration();
+
+  public boolean attemptingZeroing = false;
+  public boolean hasZeroed = false;
+
+  public DesiredElevatorPosition desiredElevatorPosition = DesiredElevatorPosition.DEFAULT;
+
+  MotionMagicVoltage motionRequest;
 
   /** Creates a new ElevatorSubsytem. */
   public ElevatorSubsytem() {
-    rightRelativeEncoder = rightMax.getEncoder();
-    rightRelativeEncoder.setPosition(0);
-    currentElevatorHeight = Constants.ElevatorConstants.L1_ELEVATOR_HEIGHT;
+    configureMotor();
+    motionRequest = new MotionMagicVoltage(0);
+
   }
 
   @Override
   public void periodic() {
-    // Print the sensor values
-    SmartDashboard.putNumber("Raw right encoder data(position):", rightRelativeEncoder. getPosition());
-    SmartDashboard.putNumber("Right encoder data(in meters):", rightRelativeEncoder.getPosition()*Constants.ElevatorConstants.POSITION_2_DISTANCE);
-    
-    // Calculate the current elevator height
-    currentElevatorHeight = rightRelativeEncoder.getPosition()*Constants.ElevatorConstants.POSITION_2_DISTANCE;
-
-    // Will be added the pid logic
-    calculateFeedBackDemand();
-    // Trials 1-) Profiled PID 2-) Profiled with feed forward mechanism
-    /*calculateProfiledDemand();
-    calculateProfiledFFDemand();*/
+    applyDemand();
   }
 
   public void setDesiredElevatorPosition(DesiredElevatorPosition desiredElevatorPosition){
     if(desiredElevatorPosition==DesiredElevatorPosition.L1){
       elevatorHeightSetpoint = Constants.ElevatorConstants.L1_ELEVATOR_HEIGHT;
+      desiredElevatorPosition = DesiredElevatorPosition.L1;
     }else if(desiredElevatorPosition==DesiredElevatorPosition.L2){
       elevatorHeightSetpoint = Constants.ElevatorConstants.L2_ELEVATOR_HEIGHT;
+      desiredElevatorPosition = DesiredElevatorPosition.L2;
     }else if(desiredElevatorPosition==DesiredElevatorPosition.L3){
       elevatorHeightSetpoint = Constants.ElevatorConstants.L3_ELEVATOR_HEIGHT;
-    }else{
+      desiredElevatorPosition = DesiredElevatorPosition.L3;
+    }else if(desiredElevatorPosition==DesiredElevatorPosition.L4){
       elevatorHeightSetpoint = Constants.ElevatorConstants.L4_ELEVATOR_HEIGHT;
+      desiredElevatorPosition = DesiredElevatorPosition.L4;
+    }else if(desiredElevatorPosition==DesiredElevatorPosition.LOWER_ALGAE_CLEAN){
+      elevatorHeightSetpoint=Constants.ElevatorConstants.LOWER_ALGAE_CLEAN_HEIGHT;
+    } else if(desiredElevatorPosition==DesiredElevatorPosition.UPPER_ALGAE_CLEAN){
+      elevatorHeightSetpoint=Constants.ElevatorConstants.UPPER_ALGAE_CLEAN_HEIGHT;
+    } else if(desiredElevatorPosition==DesiredElevatorPosition.DEFAULT){
+      elevatorHeightSetpoint=Constants.ElevatorConstants.ELEVATOR_DEFAULT_HEIGHT;
     }
   }
 
-  public void calculateFeedBackDemand(){
-    double demand = elevatorPidController.calculate(getRightDistance(), elevatorHeightSetpoint);
-    leftMax.set(-demand);
-    rightMax.set(demand);
+  public void applyDemand(){
+    elevatorTalon.setControl(motionRequest.withPosition(elevatorHeightSetpoint));
   }
 
-  public void calculateProfiledDemand(){
-    double demand = profiledElevatorPidController.calculate(getRightDistance(), elevatorHeightSetpoint);
-    applyDemand(demand);
+  public void elevateUp(){
+    elevatorTalon.set(0.3);
   }
 
-  public void calculateProfiledFFDemand(){
-    double demand = profiledElevatorPidController.calculate(getRightDistance(), elevatorHeightSetpoint) +
-                    elevatorFeedforwardController.calculate(profiledElevatorPidController.getSetpoint().velocity);
-    applyDemand(demand);
+  public void elevateDown(){
+    elevatorTalon.set(-0.3);
   }
 
-  public void elevatorUp(){
-    leftMax.set(0.3);
-    rightMax.set(-0.3);
-  }
-
-  public void elevatorDown(){
-    leftMax.set(-0.3);
-    rightMax.set(0.3);
-  }
-
-  public void stopMotors(){
-    leftMax.stopMotor();
-    rightMax.stopMotor();
-  }
-
-  public void applyDemand(double demand){
-    leftMax.setVoltage(-demand);
-    rightMax.setVoltage(demand);
+  public void stopMotor(){
+    elevatorTalon.stopMotor();
   }
 
   public boolean atSetpoint(){
-    return MathUtil.isNear(elevatorHeightSetpoint, currentElevatorHeight, 0.05);
+    return MathUtil.isNear(elevatorHeightSetpoint, currentElevatorHeight, 5);
   }
 
-  public double getRightDistance(){
-    return rightRelativeEncoder.getPosition()*Constants.ElevatorConstants.POSITION_2_DISTANCE;
+  public DesiredElevatorPosition getDesiredElevatorPosition(){
+    return desiredElevatorPosition;
   }
 
-  public double getLeftPosition(){
-    return leftRelativeEncoder.getPosition();
+  public void configureMotor(){
+
+      ELEVATOR_CONFIG.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+      // Elevator motors will provide feedback in INCHES the carriage has moved
+      ELEVATOR_CONFIG.Feedback.SensorToMechanismRatio = 0.876;
+
+      ELEVATOR_CONFIG.Slot0.kG = 0.3; // Volts to overcome gravity
+      ELEVATOR_CONFIG.Slot0.kS = 0.05; // Volts to overcome static friction
+      ELEVATOR_CONFIG.Slot0.kV = 0.0005; // Volts for a velocity target of 1 rps
+      ELEVATOR_CONFIG.Slot0.kA = 0.0; // Volts for an acceleration of 1 rps/s
+      ELEVATOR_CONFIG.Slot0.kP = 0.4;
+      ELEVATOR_CONFIG.Slot0.kI = 0.0;
+      ELEVATOR_CONFIG.Slot0.kD = 0.001;
+      ELEVATOR_CONFIG.Slot0.GravityType = GravityTypeValue.Elevator_Static;
+
+      ELEVATOR_CONFIG.MotionMagic.MotionMagicCruiseVelocity = 400;
+      ELEVATOR_CONFIG.MotionMagic.MotionMagicAcceleration = 800;
+      ELEVATOR_CONFIG.MotionMagic.MotionMagicExpo_kV = 0.12;
+
+      ELEVATOR_CONFIG.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+      ELEVATOR_CONFIG.CurrentLimits.SupplyCurrentLimitEnable = false;
+      ELEVATOR_CONFIG.CurrentLimits.SupplyCurrentLimit = 100;
+      ELEVATOR_CONFIG.CurrentLimits.StatorCurrentLimitEnable = false;
+      ELEVATOR_CONFIG.CurrentLimits.StatorCurrentLimit = 100;
+      elevatorTalon.getConfigurator().apply(ELEVATOR_CONFIG);
   }
 
 }

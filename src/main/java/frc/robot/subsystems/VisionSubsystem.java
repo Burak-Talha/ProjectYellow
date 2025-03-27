@@ -65,7 +65,6 @@ public class VisionSubsystem extends SubsystemBase {
     public void periodic() {
         updateRobotPose();
         updateDetectedTagId();
-        SmartDashboard.putNumber("Robot ile tag arasındaki açı:", botpose.getDoubleArray(new double[6])[5]);
     }
 
     public double getTid(){
@@ -87,7 +86,6 @@ public class VisionSubsystem extends SubsystemBase {
             }
 
             robotPose = new Pose2d(new Translation2d(x, y), new Rotation2d(theta));
-            System.out.println("Robot Pose from Limelight: " + robotPose);
         } else {
             
         }
@@ -96,7 +94,6 @@ public class VisionSubsystem extends SubsystemBase {
     private void updateDetectedTagId() {
         if (!(tagIdEntry.getNumber(-1).intValue()==-1)) {
             detectedTagId = tagIdEntry.getNumber(-1).intValue();
-            System.out.println("Detected Tag ID: " + detectedTagId);
         } else {
             
             detectedTagId = -1;

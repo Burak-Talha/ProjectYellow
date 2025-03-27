@@ -22,13 +22,13 @@ public final class Constants {
         public static final int pigeonID = 1;
 
         public static final COTSTalonFXSwerveConstants chosenModule =  //TODO: This must be tuned to specific robot
-        COTSTalonFXSwerveConstants.SDS.MK4.KrakenX60(COTSTalonFXSwerveConstants.SDS.MK4i.driveRatios.L2);
+        COTSTalonFXSwerveConstants.SDS.MK4.KrakenX60(COTSTalonFXSwerveConstants.SDS.MK4.driveRatios.L2);
 
         /* Drivetrain Constants */
         // Distance between right and left wheels
-        public static final double trackWidth = Units.inchesToMeters(21.73); //TODO: This must be tuned to specific robot
+        public static final double trackWidth = Units.inchesToMeters(19.68); //TODO: This must be tuned to specific robot
         // Distance between front and back wheels
-        public static final double wheelBase = Units.inchesToMeters(21.73); //TODO: This must be tuned to specific robot
+        public static final double wheelBase = Units.inchesToMeters(19.68); //TODO: This must be tuned to specific robot
         public static final double wheelCircumference = chosenModule.wheelCircumference;
 
         /* Swerve Kinematics 
@@ -64,7 +64,7 @@ public final class Constants {
         /* These values are used by the drive falcon to ramp in open loop and closed loop driving.
          * We found a small open loop ramp (0.25) helps with tread wear, tipping, etc */
         public static final double openLoopRamp = 0.25;  ///0.25
-        public static final double closedLoopRamp = 0.75;
+        public static final double closedLoopRamp = 0.25;
 
         /* Angle Motor PID Values */
         public static final double angleKP = chosenModule.angleKP;
@@ -84,7 +84,12 @@ public final class Constants {
 
         /* Swerve Profiling Values */
         /** Meters per Second */
-        public static final double maxSpeed = 3; //TODO: This must be tuned to specific robot
+        public static double currentSpeed = 1.5; //TODO: This must be tuned to specific robot
+        public static double OTO_currentSpeed = 4.5; //TODO: This must be tuned to specific robot
+        public static double defaulSpeed = 1.5;
+        public static double l4Speed = 5;
+        public static double l3Speed = 70;
+
         /** Radians per Second */
         public static final double maxAngularVelocity = 10.0; //TODO: This must be tuned to specific robot
 
@@ -133,6 +138,23 @@ public final class Constants {
                 new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, angleOffset);
         }
     }
+
+    public static final class AlignmentConstants{
+        public static final double DISTANCE_ALIGMENT_TOLERANCE = 0.2;
+        public static final double ANGLE_ALIGMENT_TOLERANCE = 5;
+
+        public static final double X_CONTROLLER_P = 1.2;
+        public static final double X_CONTROLLER_I = 0.001;
+        public static final double X_CONTROLLER_D = 0;
+
+        public static final double Y_CONTROLLER_P = 1.2;
+        public static final double Y_CONTROLLER_I = 0.001;
+        public static final double Y_CONTROLLER_D = 0;
+
+        public static final double Z_CONTROLLER_P = 0.08;
+        public static final double Z_CONTROLLER_I = 0.001;
+        public static final double Z_CONTROLLER_D = 0;
+    }
  
     public static final class AutoConstants { //TODO: The below constants are used in the example auto, and must be tuned to specific robot
         public static final double kMaxSpeedMetersPerSecond = 3;
@@ -151,48 +173,51 @@ public final class Constants {
     }
 
     public static final class ElevatorConstants{
-        public static final int LEFT_ELEVATOR_ID = 36;
-        public static final int RIGHT_ELEVATOR_ID = 34;
+        public static final int ELEVATOR_ID = 36;
         public static final int ELEVATOR_CANCODER_ID = 10;
 
-        public static final double KP = 0.005;
+        public static final double KP = 0.05;
         public static final double KI = 0;
         public static final double KD = 0.0001;
 
         public static final double KS = 0;
-        public static final double KV = 0;
-        public static final double KG = 0;
-        public static final double KA = 0;
+        public static final double KV = 0.009;
+        public static final double KG = 0.5;
+        public static final double KA = 0.000;
         
         private static final double GEAR_BOX_RATIO = 10.71;
         private static final double GEAR_RADIUS = 2.5;
         private static final double GEAR_CIRCUMFERENCE = 2*Math.PI*GEAR_RADIUS;
-        public static final double ELEVATOR_DEFAULT_HEIGHT = 0.1;
         public static final double POSITION_2_DISTANCE = (1/GEAR_BOX_RATIO)*GEAR_CIRCUMFERENCE;
         
-        public static final double L4_ELEVATOR_HEIGHT = -205;
-        public static final double L3_ELEVATOR_HEIGHT = -122.5;
-        public static final double L2_ELEVATOR_HEIGHT = -75;
+        public static final double ELEVATOR_DEFAULT_HEIGHT = 0;
+        public static final double L4_ELEVATOR_HEIGHT = 80.5;
+        public static final double L3_ELEVATOR_HEIGHT = 40;
+        public static final double L2_ELEVATOR_HEIGHT = 17;
         public static final double L1_ELEVATOR_HEIGHT = 0;
+        public static final double LOWER_ALGAE_CLEAN_HEIGHT = 30;
+        public static final double UPPER_ALGAE_CLEAN_HEIGHT = 25;
 
         public static final double MAX_VELOCITY = 5;
-        public static final double MAX_ACCELERATION = 10;
+        public static final double MAX_ACCELERATION = 5;
     }
 
     public static final class GripperConstants{
         public static final int LEFT_SPARKMAX_ID = 10;
         public static final int RIGHT_SPARKMAX_ID = 18;
+        public static final int FRONT_INFRARED_SENSOR_ID = 1;
+        public static final int REAR_INFRARED_SENSOR_ID = 0;
     }
 
     public static final class CleanerConstants{
         public static final int CLEANER_ROT_SPARKMAX_ID = 3;
         public static final int CLEANER_POW_SPARKMAX_ID = 35;
 
-        public static final double GEARBOX_RATIO = 5;
+        public static final double GEARBOX_RATIO = 40;
         public static final double PULLEY_RATIO = 1;// This will be known
         public static final double POSITION_2_DEGREE = 360/(GEARBOX_RATIO*PULLEY_RATIO);
 
-        public static final double KP = 0;
+        public static final double KP = 0.3;
         public static final double KI = 0;
         public static final double KD = 0;
         
@@ -201,12 +226,12 @@ public final class Constants {
         public static final double KA = 0;
         public static final double KS = 0;
 
-        public static final double MAX_VELOCITY = 0;
-        public static final double MAX_ACCELERATION = 0;
+        public static final double MAX_VELOCITY = 500;
+        public static final double MAX_ACCELERATION = 350;
 
-        public static final double DEFAULT_CLEANER_DEGREE = 0;
-        public static final double LOWER_ALGAE_DEGREE = 45;
-        public static final double UPPER_ALGAE_DEGREE = 135;
+        public static final double DEFAULT_CLEANER_DEGREE = -290;
+        public static final double LOWER_ALGAE_DEGREE = 0;
+        public static final double UPPER_ALGAE_DEGREE = -140;
     }
     
     public static final class IntakeConstants{
@@ -228,7 +253,7 @@ public final class Constants {
         public static final double MAX_VELOCITY = 0;
         public static final double MAX_ACCELERATION = 0;
 
-        public static final double DEFAULT_INTAKE_DEGREE = 90;
+        public static final double DEFAULT_INTAKE_DEGREE = 0;
         public static final double INTAKE_ALGAE_DEGREE = 60;
 
     }

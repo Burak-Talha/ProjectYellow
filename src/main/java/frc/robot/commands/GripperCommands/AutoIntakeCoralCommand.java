@@ -2,21 +2,21 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands.CleanerCommands;
+package frc.robot.commands.GripperCommands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.CleanerSubsystem;
+import frc.robot.subsystems.GripperSubsystem;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class CleanerGetInCommand extends Command {
+public class AutoIntakeCoralCommand extends Command {
 
-  CleanerSubsystem cleaner;
+  GripperSubsystem gripperSubsystem;
 
-  /** Creates a new CleanerGetInCommand. */
-  public CleanerGetInCommand(CleanerSubsystem cleaner) {
-    this.cleaner = cleaner;
+  /** Creates a new AutoIntakeCoralCommand. */
+  public AutoIntakeCoralCommand(GripperSubsystem gripperSubsystem) {
+    this.gripperSubsystem = gripperSubsystem;
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(cleaner);
+    addRequirements(gripperSubsystem);
   }
 
   // Called when the command is initially scheduled.
@@ -26,18 +26,22 @@ public class CleanerGetInCommand extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    cleaner.getIn();
+    if(!gripperSubsystem.rearInfrared()){
+      gripperSubsystem.fasterGetIn();
+    }else{
+      gripperSubsystem.slowerGetIn();
+    }
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    cleaner.stopMotors();
+    gripperSubsystem.stopMotors();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return gripperSubsystem.hasCoral();
   }
 }

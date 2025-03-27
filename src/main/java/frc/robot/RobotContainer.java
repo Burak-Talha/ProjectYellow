@@ -1,25 +1,47 @@
 package frc.robot;
 
 
-import com.pathplanner.lib.auto.AutoBuilder;
+import java.lang.reflect.Field;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.commands.IntakeDownCommand;
-import frc.robot.commands.IntakeUpCommand;
+import frc.robot.commands.AlignToLeftReefTargetCommand;
+import frc.robot.commands.AlignToRightReefTargetCommand;
+import frc.robot.commands.GoToReefTargetCommand;
+import frc.robot.commands.ResetOdometryCommand;
 import frc.robot.commands.TeleopSwerve;
-import frc.robot.commands.CleanerCommands.CleanerGetInCommand;
-import frc.robot.commands.CleanerCommands.CleanerGetOutCommand;
+import frc.robot.commands.CleanerCommands.CleanerDownCommand;
+import frc.robot.commands.CleanerCommands.CleanerUpCommand;
+import frc.robot.commands.CleanerCommands.RotateCleanerCommand;
 import frc.robot.commands.ElevatorCommands.ElevatorDownCommand;
 import frc.robot.commands.ElevatorCommands.ElevatorUpCommand;
 import frc.robot.commands.ElevatorCommands.RaiseElevatorCommand;
+import frc.robot.commands.ElevatorCommands.RaiseElevatorWithLimitatorCommand;
+import frc.robot.commands.GripperCommands.AutoIntakeCoralCommand;
+import frc.robot.commands.GripperCommands.AutoOuttakeCoralCommand;
 import frc.robot.commands.GripperCommands.IntakeCoralCommand;
 import frc.robot.commands.GripperCommands.OuttakeCoralCommand;
+import frc.robot.commands.IntakeCommands.IntakeCommand;
+import frc.robot.commands.IntakeCommands.IntakeDownCommand;
+import frc.robot.commands.IntakeCommands.IntakeUpCommand;
+import frc.robot.commands.IntakeCommands.OuttakeCommand;
+import frc.robot.commands.IntakeCommands.RotateIntakeCommand;
 import frc.robot.subsystems.*;
+import frc.robot.subsystems.CleanerSubsystem.DesiredCleanerPosition;
 import frc.robot.subsystems.ElevatorSubsytem.DesiredElevatorPosition;
+import frc.robot.subsystems.IntakeSubsystem.DesiredIntakePosition;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -39,23 +61,62 @@ public class RobotContainer {
     private final Joystick operator = new Joystick(1);
 
     /* Subsystems */
-    private final SwerveSubsystem s_Swerve = new SwerveSubsystem();
-    private final ElevatorSubsytem elevatorSubsytem = new ElevatorSubsytem();
+    private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
+    private final ElevatorSubsytem elevatorSubsystem = new ElevatorSubsytem();
     private final GripperSubsystem gripperSubsystem = new GripperSubsystem();
-    private final CleanerSubsystem cleaner = new CleanerSubsystem();
     private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
+    private final VisionSubsystem visionSubsystem = new VisionSubsystem();
+    private final CleanerSubsystem cleanerSubsystem = new CleanerSubsystem();
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
-        s_Swerve.setDefaultCommand(
+        
+        //cleanerSubsystem.setDefaultCommand(new RotateCleanerCommand(cleanerSubsystem, DesiredCleanerPosition.DEFAULT));
+        NamedCommands.registerCommand("AlignToLeftTarget", new AlignToLeftReefTargetCommand(swerveSubsystem, visionSubsystem));
+        NamedCommands.registerCommand("AlignToRightTarget", new AlignToRightReefTargetCommand(swerveSubsystem, visionSubsystem));
+        NamedCommands.registerCommand("AutoIntake", new AutoIntakeCoralCommand(gripperSubsystem));
+        NamedCommands.registerCommand("AutoOuttake", new AutoOuttakeCoralCommand(gripperSubsystem));
+        NamedCommands.registerCommand("test", new WaitUntilCommand(gripperSubsystem::hasCoral).andThen(new RaiseElevatorCommand(elevatorSubsystem, DesiredElevatorPosition.L1)));
+        NamedCommands.registerCommand("ScoreCoralToL1", new WaitUntilCommand(()->gripperSubsystem.hasCoral())
+                                                    .andThen(new RaiseElevatorCommand(elevatorSubsystem, DesiredElevatorPosition.L1))
+                                                    .andThen(new AutoOuttakeCoralCommand(gripperSubsystem)));
+        NamedCommands.registerCommand("ScoreCoralToL2", new WaitUntilCommand(()->gripperSubsystem.hasCoral())
+                                                    .andThen(new RaiseElevatorCommand(elevatorSubsystem, DesiredElevatorPosition.L2))
+                                                    .andThen(new AutoOuttakeCoralCommand(gripperSubsystem))
+                                                    .andThen(new RaiseElevatorCommand(elevatorSubsystem, DesiredElevatorPosition.L1)));
+        NamedCommands.registerCommand("ScoreCoralToL3", new WaitUntilCommand(()->gripperSubsystem.hasCoral())
+                                                    .andThen(new RaiseElevatorCommand(elevatorSubsystem, DesiredElevatorPosition.L3))
+                                                    .andThen(new AutoOuttakeCoralCommand(gripperSubsystem))
+                                                    .andThen(new RaiseElevatorCommand(elevatorSubsystem, DesiredElevatorPosition.L1)));
+        NamedCommands.registerCommand("ScoreCoralToL4", new WaitUntilCommand(()->gripperSubsystem.hasCoral())
+                                                    .andThen(new RaiseElevatorCommand(elevatorSubsystem, DesiredElevatorPosition.L1))
+                                                    .andThen(new AutoOuttakeCoralCommand(gripperSubsystem))
+                                                    .andThen(new RaiseElevatorCommand(elevatorSubsystem, DesiredElevatorPosition.L1)));
+        if(DriverStation.getAlliance().get()==Alliance.Red){
+        swerveSubsystem.setDefaultCommand(
             new TeleopSwerve(
-                s_Swerve, 
+                swerveSubsystem,
+                elevatorSubsystem,
                 () -> driver.getRawAxis(1), 
                 () -> driver.getRawAxis(0), 
-                () -> driver.getRawAxis(4), 
+                () -> -driver.getRawAxis(4), 
                 () -> false
             )
         );
+        } else{
+        swerveSubsystem.setDefaultCommand(
+            new TeleopSwerve(
+                swerveSubsystem,
+                elevatorSubsystem,
+                () -> -driver.getRawAxis(1), 
+                () -> -driver.getRawAxis(0), 
+                () -> -driver.getRawAxis(4), 
+                () -> false
+                )
+            );  
+        }
+
+        //intakeSubsystem.setDefaultCommand(new RotateIntakeCommand(intakeSubsystem, DesiredIntakePosition.DEFAULT));
 
         // Configure the button bindings
         configureButtonBindings();
@@ -68,45 +129,78 @@ public class RobotContainer {
      * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
     private void configureButtonBindings() {
-        // Unit Test commands
-        // Go to human intake command
-        /* 
-        // Go to coprocessor commannd
-        new JoystickButton(driver, Button.kA.value).whileTrue(new GoToCoProcessorCommand(s_Swerve).repeatedly());
-        // Go to reef target commands
-        new JoystickButton(driver, Button.kLeftBumper.value).whileTrue(new GoToReefTargetCommand(s_Swerve, s_Vision, TargetAB.A));
-        new JoystickButton(driver, Button.kRightBumper.value).whileTrue(new GoToReefTargetCommand(s_Swerve, s_Vision, TargetAB.B));
-        // Go to human intake commands
-        new JoystickButton(driver, Button.kA.value).whileTrue(new GoToHumanIntakeCommand(s_Swerve, TargetAB.A));
-        new JoystickButton(driver, Button.kB.value).whileTrue(new GoToHumanIntakeCommand(s_Swerve, TargetAB.B));
-        */
+        
+        // limelight testing
+        new JoystickButton(driver, 1).whileTrue(new ResetOdometryCommand(swerveSubsystem));
+        new JoystickButton(driver, 3).whileTrue(new GoToReefTargetCommand(swerveSubsystem, visionSubsystem, FieldConstants.LEFT_TARGET_OFFSET));
+        new JoystickButton(driver, 2).whileTrue(new GoToReefTargetCommand(swerveSubsystem, visionSubsystem, FieldConstants.RIGHT_TARGET_OFFSET));
+        new JoystickButton(driver, 4).whileTrue(new GoToReefTargetCommand(swerveSubsystem, visionSubsystem, FieldConstants.CENTER_TARGET_OFFSET));
 
-        // Driver Buttons
-      /* new JoystickButton(driver, Button.kY.value).whileTrue(new ResetOdometryCommand(s_Swerve));
-        new JoystickButton(driver, Button.kB.value).whileTrue(new GoToHumanIntakeCommand(s_Swerve, TargetAB.A).repeatedly());
-        new JoystickButton(driver, Button.kX.value).whileTrue(new GoToHumanIntakeCommand(s_Swerve, TargetAB.B).repeatedly());
-        new JoystickButton(driver, Button.kA.value).whileTrue(new GoToCoProcessorCommand(s_Swerve).repeatedly());
-        new JoystickButton(driver, Button.kLeftBumper.value).whileTrue(new GoToReefTargetCommand(s_Swerve, s_Vision, TargetAB.A).repeatedly());
-        new JoystickButton(driver, Button.kRightBumper.value).whileTrue(new GoToReefTargetCommand(s_Swerve, s_Vision, TargetAB.B).repeatedly());*/
-
-        // Operator Buttons
-        new JoystickButton(driver, 1).whileTrue(new ElevatorUpCommand(elevatorSubsytem));
-        new JoystickButton(driver, 2).whileTrue(new ElevatorDownCommand(elevatorSubsytem));
-        new JoystickButton(driver, 3).whileTrue(new CleanerGetInCommand(cleaner));
-        new JoystickButton(driver, 4).whileTrue(new CleanerGetOutCommand(cleaner));
-        new JoystickButton(driver, 5).whileTrue(new IntakeCoralCommand(gripperSubsystem));
+        new JoystickButton(driver, 5).whileTrue(new AutoIntakeCoralCommand(gripperSubsystem));
         new JoystickButton(driver, 6).whileTrue(new OuttakeCoralCommand(gripperSubsystem));
 
-        // Elevator PID test  
-        new JoystickButton(operator, 1).whileTrue(new RaiseElevatorCommand(elevatorSubsytem, DesiredElevatorPosition.L1));
-        new JoystickButton(operator, 2).whileTrue(new RaiseElevatorCommand(elevatorSubsytem, DesiredElevatorPosition.L2));
-        new JoystickButton(operator, 3).whileTrue(new RaiseElevatorCommand(elevatorSubsytem, DesiredElevatorPosition.L3));
-        new JoystickButton(operator, 4).whileTrue(new RaiseElevatorCommand(elevatorSubsytem, DesiredElevatorPosition.L4));
-        /*new JoystickButton(operator, 3).whileTrue(new IntakeCommand(intakeSubsystem));
+
+       /*new JoystickButton(operator, 3).whileTrue(new IntakeCommand(intakeSubsystem));
         new JoystickButton(operator, 4).whileTrue(new OuttakeCommand(intakeSubsystem));
-        */
         new JoystickButton(operator, 5).whileTrue(new IntakeUpCommand(intakeSubsystem));
-        new JoystickButton(operator, 6).whileTrue(new IntakeDownCommand(intakeSubsystem));
+        new JoystickButton(operator, 6).whileTrue(new IntakeDownCommand(intakeSubsystem));*/
+
+        // Elevator PID test  
+        new JoystickButton(operator, 1).whileTrue(new RaiseElevatorCommand(elevatorSubsystem, DesiredElevatorPosition.L1));
+        new JoystickButton(operator, 2).whileTrue(new WaitUntilCommand(gripperSubsystem::hasCoral).andThen(new RaiseElevatorCommand(elevatorSubsystem, DesiredElevatorPosition.LOWER_ALGAE_CLEAN)));
+        new JoystickButton(operator, 3).whileTrue(new WaitUntilCommand(gripperSubsystem::hasCoral).andThen(new RaiseElevatorCommand(elevatorSubsystem, DesiredElevatorPosition.L3)));
+        //new JoystickButton(operator, 4).whileTrue(new WaitUntilCommand(gripperSubsystem::hasCoral).andThen(new RaiseElevatorCommand(elevatorSubsystem, DesiredElevatorPosition.L4)));
+
+        /*new JoystickButton(operator, 4).whileTrue(new RotateCleanerCommand(cleanerSubsystem, DesiredCleanerPosition.DEFAULT));
+        new JoystickButton(operator, 5).whileTrue(new RotateCleanerCommand(cleanerSubsystem, DesiredCleanerPosition.LOWER_ALGAE));
+        new JoystickButton(operator, 6).whileTrue(new RotateCleanerCommand(cleanerSubsystem, DesiredCleanerPosition.UPPER_ALGAE));*/
+
+        /*new JoystickButton(operator, 1).whileTrue(new RotateIntakeCommand(intakeSubsystem, DesiredIntakePosition.DEFAULT));
+        new JoystickButton(operator, 2).whileTrue(new RotateIntakeCommand(intakeSubsystem, DesiredIntakePosition.INTAKE));*/
+
+        //new JoystickButton(operator, 1).whileTrue(new IntakeUpCommand(intakeSubsystem));
+       // new JoystickButton(operator, 2).whileTrue(new IntakeDownCommand(intakeSubsystem));
+
+        //new JoystickButton(operator, 5).whileTrue(new CleanerUpCommand(cleanerSubsystem));
+        //new JoystickButton(operator, 6).whileTrue(new CleanerDownCommand(cleanerSubsystem));
+        // Elevator test with limited chassis speed
+        /*new JoystickButton(operator, 1).whileTrue(new RaiseElevatorWithLimitatorCommand(elevatorSubsystem, swerveSubsystem, DesiredElevatorPosition.L1));
+        new JoystickButton(operator, 3).whileTrue(new RaiseElevatorWithLimitatorCommand(elevatorSubsystem, swerveSubsystem, DesiredElevatorPosition.L3));
+        new JoystickButton(operator, 4).whileTrue(new RaiseElevatorWithLimitatorCommand(elevatorSubsystem, swerveSubsystem, DesiredElevatorPosition.L4));*/
+
+        // Cleaner test
+        //new JoystickButton(operator, 4).whileTrue(new RotateCleanerCommand(cleanerSubsystem, DesiredCleanerPosition.DEFAULT));
+        //new JoystickButton(operator, 5).whileTrue(new RotateCleanerCommand(cleanerSubsystem, DesiredCleanerPosition.LOWER_ALGAE));
+        //new JoystickButton(operator, 6).whileTrue(new RotateCleanerCommand(cleanerSubsystem, DesiredCleanerPosition.UPPER_ALGAE));
+        new JoystickButton(operator, 5).whileTrue(new CleanerUpCommand(cleanerSubsystem));
+        new JoystickButton(operator, 6).whileTrue(new CleanerDownCommand(cleanerSubsystem));
+
+        // Intake PID test
+       // new JoystickButton(operator, 1).whileTrue(Commands.run(()->intakeSubsystem.setDesiredIntakePosition(DesiredIntakePosition.DEFAULT)));
+       // new JoystickButton(operator, 2).whileTrue(Commands.run(()->intakeSubsystem.setDesiredIntakePosition(DesiredIntakePosition.INTAKE)));
+
+        // Main Intake logic
+        /*new JoystickButton(operator, 1).whileTrue(new ParallelCommandGroup(
+                                                                    new RotateIntakeCommand(intakeSubsystem, DesiredIntakePosition.INTAKE),
+                                                                    new IntakeCommand(intakeSubsystem)));
+        new JoystickButton(operator, 2).whileTrue(new OuttakeCommand(intakeSubsystem));*/
+
+                // Clean Algae Commands
+        /*new JoystickButton(driver, 1).whileTrue(
+            new ParallelCommandGroup(
+                                      new RotateCleanerCommand(cleanerSubsystem, DesiredCleanerPosition.DEFAULT),
+                                      new ParallelCommandGroup(
+                                                               new GoToReefTargetCommand(swerveSubsystem, visionSubsystem, FieldConstants.LEFT_TARGET_OFFSET),
+                                                               new WaitUntilCommand(() -> swerveSubsystem.robotAtSetpoint()).andThen(new RaiseElevatorCommand(elevatorSubsytem, DesiredElevatorPosition.LOWER_ALGAE_CLEAN))
+                                      )).andThen(new RotateCleanerCommand(cleanerSubsystem, DesiredCleanerPosition.LOWER_ALGAE)));
+        new JoystickButton(driver, 2).whileTrue(
+            new ParallelCommandGroup(
+                                      new RotateCleanerCommand(cleanerSubsystem, DesiredCleanerPosition.DEFAULT),
+                                      new ParallelCommandGroup(
+                                                               new GoToReefTargetCommand(swerveSubsystem, visionSubsystem, FieldConstants.RIGHT_TARGET_OFFSET),
+                                                               new WaitUntilCommand(() -> swerveSubsystem.robotAtSetpoint()).andThen(new RaiseElevatorCommand(elevatorSubsytem, DesiredElevatorPosition.UPPER_ALGAE_CLEAN))
+                                      )).andThen(new RotateCleanerCommand(cleanerSubsystem, DesiredCleanerPosition.UPPER_ALGAE).andThen(new CleanerDownCommand(cleanerSubsystem))));*/
+        
     }
 
     /**
@@ -115,6 +209,6 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-        return AutoBuilder.buildAuto("New Auto");
+        return new RotateCleanerCommand(cleanerSubsystem, DesiredCleanerPosition.DEFAULT).andThen(AutoBuilder.buildAuto("New Auto"));
     }
 }

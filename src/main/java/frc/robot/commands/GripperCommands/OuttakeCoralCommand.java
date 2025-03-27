@@ -5,12 +5,14 @@
 package frc.robot.commands.GripperCommands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.ElevatorSubsytem;
 import frc.robot.subsystems.GripperSubsystem;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class OuttakeCoralCommand extends Command {
 
   private GripperSubsystem gripperSubsystem;
+  ElevatorSubsytem elevatorSubsystem = new ElevatorSubsytem();
 
   /** Creates a new CoralOuttakeCommand. */
   public OuttakeCoralCommand(GripperSubsystem gripperSubsystem) {

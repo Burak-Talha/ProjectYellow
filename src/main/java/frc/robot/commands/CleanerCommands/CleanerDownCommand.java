@@ -8,12 +8,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.CleanerSubsystem;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class CleanerGetOutCommand extends Command {
+public class CleanerDownCommand extends Command {
 
   CleanerSubsystem cleaner;
 
-  /** Creates a new CleanerGetOutCommand. */
-  public CleanerGetOutCommand(CleanerSubsystem cleaner) {
+  /** Creates a new CleanerGetInCommand. */
+  public CleanerDownCommand(CleanerSubsystem cleaner) {
     this.cleaner = cleaner;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(cleaner);
@@ -26,7 +26,7 @@ public class CleanerGetOutCommand extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    cleaner.getOut();
+    cleaner.getIn();
   }
 
   // Called once the command ends or is interrupted.

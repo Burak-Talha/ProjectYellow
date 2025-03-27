@@ -8,6 +8,7 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -39,29 +40,31 @@ public class CleanerSubsystem extends SubsystemBase {
 
 
   public enum DesiredCleanerPosition{
-    LOWER_ALGAE, UPPER_ALGAE
+    LOWER_ALGAE, UPPER_ALGAE, DEFAULT
   }
 
-  double currentArmDegree = 0;
-  double armDegreeSetpoint = Constants.CleanerConstants.LOWER_ALGAE_DEGREE;
+  double armDegreeSetpoint = Constants.CleanerConstants.DEFAULT_CLEANER_DEGREE;
 
   /** Creates a new Cleaner. */
   public CleanerSubsystem() {
     rotRelativeEncoder = cleanerRot.getEncoder();
+    rotRelativeEncoder.setPosition(0);
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
     SmartDashboard.putNumber("Get rotation degree :", getRotationDegree());
-
+    //calculateFeedbackDemand();
   }
 
   public void setDesiredPosition(DesiredCleanerPosition desiredCleanerPosition){
     if(desiredCleanerPosition==DesiredCleanerPosition.LOWER_ALGAE){
-      currentArmDegree = Constants.CleanerConstants.LOWER_ALGAE_DEGREE;
+      armDegreeSetpoint = Constants.CleanerConstants.LOWER_ALGAE_DEGREE;
     }else if(desiredCleanerPosition==DesiredCleanerPosition.UPPER_ALGAE){
-      currentArmDegree = Constants.CleanerConstants.UPPER_ALGAE_DEGREE;
+      armDegreeSetpoint = Constants.CleanerConstants.UPPER_ALGAE_DEGREE;
+    }else if(desiredCleanerPosition==DesiredCleanerPosition.DEFAULT){
+      armDegreeSetpoint = Constants.CleanerConstants.DEFAULT_CLEANER_DEGREE;
     }
   }
 
@@ -70,7 +73,14 @@ public class CleanerSubsystem extends SubsystemBase {
     applyDemand(demand);
   }
 
-  public void calculateProfiledDemand(){
+  public void calculateProfiledDemand(DesiredCleanerPosition desiredCleanerPosition){
+    if(desiredCleanerPosition==DesiredCleanerPosition.LOWER_ALGAE){
+      armDegreeSetpoint = Constants.CleanerConstants.LOWER_ALGAE_DEGREE;
+    }else if(desiredCleanerPosition==DesiredCleanerPosition.UPPER_ALGAE){
+      armDegreeSetpoint = Constants.CleanerConstants.UPPER_ALGAE_DEGREE;
+    }else if(desiredCleanerPosition==DesiredCleanerPosition.DEFAULT){
+      armDegreeSetpoint = Constants.CleanerConstants.DEFAULT_CLEANER_DEGREE;
+    }
     double demand = profiledRotController.calculate(getRotationDegree(), armDegreeSetpoint);
     applyDemand(demand);
   }
@@ -85,11 +95,15 @@ public class CleanerSubsystem extends SubsystemBase {
   }
 
   public void getIn(){
-    cleanerRot.set(0.15);
+    cleanerRot.set(0.05);
   }
 
   public void getOut(){
-    cleanerRot.set(-0.15);
+    cleanerRot.set(-0.05);
+  }
+
+  public boolean atSetpoint(){
+    return MathUtil.isNear(armDegreeSetpoint, getRotationDegree(), 10);
   }
 
   public double getRotationDegree(){

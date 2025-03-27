@@ -4,6 +4,7 @@
 
 package frc.robot.commands.ElevatorCommands;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.subsystems.ElevatorSubsytem;
 import frc.robot.subsystems.ElevatorSubsytem.DesiredElevatorPosition;
@@ -27,6 +28,20 @@ public class RaiseElevatorCommand extends InstantCommand {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    SmartDashboard.putNumber("BEN calisiyorum ", 0);
     elevatorSubsystem.setDesiredElevatorPosition(desiredElevatorPosition);
   }
+
+    // Called once the command ends or is interrupted.
+    @Override
+    public void end(boolean interrupted) {
+      SmartDashboard.putBoolean("RAISE ELEVATOR HAS ENDED", true);
+    }
+    
+    // Returns true when the command should end.
+    @Override
+    public boolean isFinished() {
+      return elevatorSubsystem.atSetpoint();
+    }
+
 }

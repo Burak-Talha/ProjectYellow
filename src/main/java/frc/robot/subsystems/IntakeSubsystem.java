@@ -56,7 +56,7 @@ public class IntakeSubsystem extends SubsystemBase {
   public IntakeSubsystem() {
     rotRelativeEncoder = rotSparkMax.getEncoder();
     // Set encoder value to start pose
-    rotRelativeEncoder.setPosition(Constants.IntakeConstants.DEFAULT_INTAKE_DEGREE);
+    rotRelativeEncoder.setPosition(0);
   }
 
   @Override

@@ -7,7 +7,32 @@
         {
           "type": "path",
           "data": {
-            "pathName": "New Path"
+            "pathName": "GoToFirstRangeBlue"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "AlignToRightTarget"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "test"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AutoOuttake"
           }
         }
       ]

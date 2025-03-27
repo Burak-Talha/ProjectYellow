@@ -1,0 +1,91 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "GoToFirstRange"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AlignToRightTarget"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ScoreCoralToL4"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "GoToGetFirstCoral"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AutoIntake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "GoToSecondRange"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AlignToRightTarget"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ScoreCoralToL4"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "GoToGetSecondCoral"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AutoIntake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "GoToThirdRange"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AlignToLeftTarget"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ScoreCoralToL4"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}

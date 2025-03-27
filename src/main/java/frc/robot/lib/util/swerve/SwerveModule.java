@@ -1,4 +1,4 @@
-package frc.robot;
+package frc.robot.lib.util.swerve;
 
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.PositionVoltage;
@@ -10,8 +10,9 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import frc.robot.Constants;
+import frc.robot.Robot;
 import frc.robot.lib.math.Conversions;
-import frc.robot.lib.util.swerve.SwerveModuleConstants;
 
 public class SwerveModule {
     public int moduleNumber;
@@ -57,7 +58,7 @@ public class SwerveModule {
 
     private void setSpeed(SwerveModuleState desiredState, boolean isOpenLoop){
         if(isOpenLoop){
-            driveDutyCycle.Output = desiredState.speedMetersPerSecond / Constants.Swerve.maxSpeed;
+            driveDutyCycle.Output = desiredState.speedMetersPerSecond / Constants.Swerve.currentSpeed;
             mDriveMotor.setControl(driveDutyCycle);
         }
         else {

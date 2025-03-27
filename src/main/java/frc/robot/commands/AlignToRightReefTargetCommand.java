@@ -4,7 +4,6 @@
 
 package frc.robot.commands;
 
-import java.util.Arrays;
 import java.util.List;
 
 import edu.wpi.first.apriltag.AprilTag;
@@ -18,14 +17,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.FieldConstants;
-import frc.robot.RobotContainer.TargetAB;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class GoToReefTargetCommand extends Command {
-
-  SwerveSubsystem swerveSubsystem;
+public class AlignToRightReefTargetCommand extends Command {
+   SwerveSubsystem swerveSubsystem;
   VisionSubsystem vision;
   private Translation2d kOffsetTranslation;
   private Pose2d currentTargetPose2d = null;
@@ -36,10 +33,10 @@ public class GoToReefTargetCommand extends Command {
   private PIDController zController = new PIDController(Constants.AlignmentConstants.Z_CONTROLLER_P, Constants.AlignmentConstants.Z_CONTROLLER_I, Constants.AlignmentConstants.Z_CONTROLLER_D);
 
   /** Creates a new GoToReefTargetCommand. */
-  public GoToReefTargetCommand(SwerveSubsystem swerveSubsystem, VisionSubsystem vision, Translation2d kOffsetTranslation) {
+  public AlignToRightReefTargetCommand(SwerveSubsystem swerveSubsystem, VisionSubsystem vision) {
     this.swerveSubsystem = swerveSubsystem;
     this.vision = vision;
-    this.kOffsetTranslation = kOffsetTranslation;
+    this.kOffsetTranslation = FieldConstants.RIGHT_TARGET_OFFSET;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(swerveSubsystem);
   }
@@ -70,14 +67,8 @@ public class GoToReefTargetCommand extends Command {
       double xDemand = currentTargetPose2d.getX() - swerveSubsystem.getEstimatedPose().getX();
       double yDemand = currentTargetPose2d.getY() - swerveSubsystem.getEstimatedPose().getY();
       double zDemand = currentTargetPose2d.getRotation().getDegrees() - swerveSubsystem.getEstimatedPose().getRotation().getDegrees();
-
-      SmartDashboard.putNumber("X DEMAND:", xDemand);
-
-      SmartDashboard.putNumber("Y DEMAND:", yDemand);
-      SmartDashboard.putNumber("Z DEMAND:", zDemand);
-
       zDemand = (zDemand + 180) % 360 - 180;
-      swerveSubsystem.drive(new Translation2d(xDemand*0.8, yDemand*1.2), zDemand*0.06, true, true);
+      swerveSubsystem.drive(new Translation2d(xDemand*0.8, yDemand*0.8), zDemand*0.045, true, true);
     }catch(Exception exception){
       exception.printStackTrace();
     }
@@ -93,6 +84,6 @@ public class GoToReefTargetCommand extends Command {
   @Override
   public boolean isFinished() {
     //return (MathUtil.isNear(xError, nearestAprilTagId, aprilTagId));
-    return false;//MathUtil.isNear(0, errorDistance, Constants.AlignmentConstants.DISTANCE_ALIGMENT_TOLERANCE);
+    return MathUtil.isNear(0, errorDistance, Constants.AlignmentConstants.DISTANCE_ALIGMENT_TOLERANCE);
   }
 }

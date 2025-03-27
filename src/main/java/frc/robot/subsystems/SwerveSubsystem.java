@@ -14,12 +14,14 @@ import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -39,7 +41,7 @@ import frc.robot.FieldConstants;
 import frc.robot.LimelightHelpers;
 import frc.robot.LimelightHelpers.PoseEstimate;
 import frc.robot.lib.util.TargetReef;
-import frc.robot.SwerveModule;
+import frc.robot.lib.util.swerve.SwerveModule;
 
 public class SwerveSubsystem extends SubsystemBase {
 
@@ -50,12 +52,16 @@ public class SwerveSubsystem extends SubsystemBase {
     RobotConfig config;
     Field2d field2d = new Field2d();
     AprilTagFieldLayout aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape);
-    Translation3d robotpose;
-    Pose3d pose3d = new Pose3d();
 
+    Pose2d currentTargetPose;
+
+    public enum DesiredBaseChassisSpeed{
+        DEFAULT, L3_SPEED, L4_SPEED
+    }
+    
     // If u gonna trust your data, decrease the coeffecients. Otherwise increase it.
-    private static final Matrix<N3, N1> visionMeasurementStdDevs = VecBuilder.fill(0.0000003, 0.000003, Math.toRadians(10));
-    private static final Matrix<N3,N1> localMeasurementStdDevs = VecBuilder.fill(0.2, 0.2, Math.toRadians(3));
+    private static final Matrix<N3, N1> visionMeasurementStdDevs = VecBuilder.fill(2.5, 2.5, 9999999);
+    private static final Matrix<N3,N1> localMeasurementStdDevs = VecBuilder.fill(0.2, 0.2, Math.toRadians(5));
 
     public SwerveSubsystem() {  
         //Translation2d setpointTranslation2d = aprilTagFieldLayout.getTagPose(1).get().toPose2d().getTranslation().minus((swerveOdometry.getPoseMeters()));
@@ -81,22 +87,21 @@ public class SwerveSubsystem extends SubsystemBase {
         localMeasurementStdDevs,
         visionMeasurementStdDevs);
 
-        swerveOdometry = new SwerveDriveOdometry(Constants.Swerve.swerveKinematics, getGyroYaw(), getModulePositions());
-
         try{
             config = RobotConfig.fromGUISettings();
         } catch (Exception e) {
           e.printStackTrace();
         }
 
+
         AutoBuilder.configure(
-                this::getPose,
+                this::getEstimatedPose,
                 this::setPose,
                 this::getRobotRelativeSpeeds,
-                this::driveRobotRelative,
+                this::oto_driveRobotRelative,
                 new PPHolonomicDriveController(
-                        new PIDConstants(50, 0.0, 0),
-                        new PIDConstants(0.1, 0.0, 0.0)
+                        new PIDConstants(8, 0.0, 0),
+                        new PIDConstants(15, 0.0, 0.0) // 0.1
                 ),
                 config,
                 () -> {
@@ -108,7 +113,13 @@ public class SwerveSubsystem extends SubsystemBase {
                 },
                 this
         );
+
+
+        if(DriverStation.getAlliance().get()==Alliance.Blue){
+            resetRobotPoseByLimelight();
+        }
     }
+    
 
     public ChassisSpeeds getRobotRelativeSpeeds(){
         return Constants.Swerve.swerveKinematics.toChassisSpeeds(getModuleStates());
@@ -116,8 +127,13 @@ public class SwerveSubsystem extends SubsystemBase {
 
     public void driveRobotRelative(ChassisSpeeds speeds){
         SwerveModuleState[] states = Constants.Swerve.swerveKinematics.toSwerveModuleStates(speeds);
-        SwerveDriveKinematics.desaturateWheelSpeeds(states, Constants.Swerve.maxSpeed);
+        SwerveDriveKinematics.desaturateWheelSpeeds(states, Constants.Swerve.currentSpeed);
         setModuleStates(states);
+    }
+    public void oto_driveRobotRelative(ChassisSpeeds speeds){
+        SwerveModuleState[] states = Constants.Swerve.swerveKinematics.toSwerveModuleStates(speeds);
+        SwerveDriveKinematics.desaturateWheelSpeeds(states, Constants.Swerve.OTO_currentSpeed);
+        oto_setModuleStates(states);
     }
 
     public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
@@ -134,7 +150,7 @@ public class SwerveSubsystem extends SubsystemBase {
                                     translation.getY(), 
                                     rotation)
                                 );
-        SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, Constants.Swerve.maxSpeed);
+        SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, Constants.Swerve.currentSpeed);
 
         for(SwerveModule mod : mSwerveMods){
             mod.setDesiredState(swerveModuleStates[mod.moduleNumber], isOpenLoop);
@@ -142,10 +158,28 @@ public class SwerveSubsystem extends SubsystemBase {
     }    
 
     public void setModuleStates(SwerveModuleState[] desiredStates) {
-        SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, Constants.Swerve.maxSpeed);
+        SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, Constants.Swerve.currentSpeed);
         
         for(SwerveModule mod : mSwerveMods){
             mod.setDesiredState(desiredStates[mod.moduleNumber], false);
+        }
+    }
+
+    public void oto_setModuleStates(SwerveModuleState[] desiredStates) {
+        SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, Constants.Swerve.OTO_currentSpeed);
+        
+        for(SwerveModule mod : mSwerveMods){
+            mod.setDesiredState(desiredStates[mod.moduleNumber], false);
+        }
+    }
+
+    public void setMaxSpeed(DesiredBaseChassisSpeed desiredBaseChassisSpeed){
+        if(desiredBaseChassisSpeed==DesiredBaseChassisSpeed.DEFAULT){
+            Constants.Swerve.currentSpeed = Constants.Swerve.defaulSpeed;
+        }else if(desiredBaseChassisSpeed==DesiredBaseChassisSpeed.L4_SPEED){
+            Constants.Swerve.currentSpeed = Constants.Swerve.l4Speed;
+        }else if(desiredBaseChassisSpeed==DesiredBaseChassisSpeed.L3_SPEED){
+            Constants.Swerve.currentSpeed = Constants.Swerve.l3Speed;
         }
     }
 
@@ -165,40 +199,51 @@ public class SwerveSubsystem extends SubsystemBase {
         return positions;
     }
 
-    public Pose2d getPose() {
-        return swerveOdometry.getPoseMeters();
-    }
-
     public Pose2d getEstimatedPose(){
         return swerveDrivePoseEstimator.getEstimatedPosition();
     }
 
     public void setPose(Pose2d pose) {
-        swerveOdometry.resetPosition(getGyroYaw(), getModulePositions(), pose);
+       // swerveDrivePoseEstimator.resetPosition(getGyroYaw(), getModulePositions(), pose);
+       swerveDrivePoseEstimator.resetPose(getPose2dmt2());
     }
 
     public void resetRobotPoseByLimelight(){
-        Pose2d tempPose;
-        LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
+        LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-first");
         // Todo işlem kalabalığını azalt.
-        tempPose = new Pose2d(mt2.pose.getX(), mt2.pose.getY(), new Rotation2d(3.14+mt2.pose.getRotation().getRadians()));
+        Pose2d tempPose = new Pose2d(mt2.pose.getX(), mt2.pose.getY(), new Rotation2d(3.14+mt2.pose.getRotation().getRadians()));
+        //Pose2d tempPose = getEstimatedPose().transformBy(new Transform2d(new Translation2d(), new Rotation2d(Math.PI)));
         swerveDrivePoseEstimator.resetPose(tempPose);
     }
 
     public Rotation2d getHeading(){
-        return getPose().getRotation();
+        return getEstimatedPose().getRotation();
     }
 
     public void setHeading(Rotation2d heading){
-        swerveOdometry.resetPosition(getGyroYaw(), getModulePositions(), new Pose2d(getPose().getTranslation(), heading));
+        swerveOdometry.resetPosition(getGyroYaw(), getModulePositions(), new Pose2d(getEstimatedPose().getTranslation(), heading));
     }
 
     public void zeroHeading(){
-        swerveOdometry.resetPosition(getGyroYaw(), getModulePositions(), new Pose2d(getPose().getTranslation(), new Rotation2d()));
+        swerveOdometry.resetPosition(getGyroYaw(), getModulePositions(), new Pose2d(getEstimatedPose().getTranslation(), new Rotation2d()));
+    }
+
+    public void setCurrentTargetPose(Pose2d targetPose){
+        this.currentTargetPose = targetPose;
+    }
+
+    public boolean robotAtSetpoint(){
+        double distanceBetweenTarget = currentTargetPose.getTranslation().getDistance(getEstimatedPose().getTranslation());
+        return MathUtil.isNear(0, distanceBetweenTarget, Constants.AlignmentConstants.DISTANCE_ALIGMENT_TOLERANCE);
     }
 
     public Rotation2d getGyroYaw() {
         return Rotation2d.fromDegrees(gyro.getYaw().getValueAsDouble());
+    }
+
+    public Pose2d getPose2dmt2(){
+        LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-first");
+        return mt2.pose;
     }
 
     // Range : 0-360+ - 0-(-360) continous
@@ -218,14 +263,13 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     public void addVisionMeasurementByThresholds(PoseEstimate poseEstimate1, PoseEstimate poseEstimate2){
-        swerveDrivePoseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(4,4,99999999));
         try{
         if(poseEstimate1.tagCount!=0){
             swerveDrivePoseEstimator.addVisionMeasurement(poseEstimate1.pose, poseEstimate1.timestampSeconds);
         }
-        /*if(poseEstimate2.tagCount!=0){
+        if(poseEstimate2.tagCount!=0){
             swerveDrivePoseEstimator.addVisionMeasurement(poseEstimate2.pose, poseEstimate2.timestampSeconds);
-        }*/
+        }
     }catch(Exception exception){
         
     }
@@ -233,29 +277,15 @@ public class SwerveSubsystem extends SubsystemBase {
 
     @Override
     public void periodic(){
-        swerveOdometry.update(getGyroYaw(), getModulePositions());
         try {
-            SmartDashboard.putNumber("Robot kg:", RobotConfig.fromGUISettings().massKG);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ParseException e) {
-            e.printStackTrace();
+            LimelightHelpers.SetRobotOrientation("limelight", swerveDrivePoseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
+            LimelightHelpers.SetRobotOrientation("limelight-first", swerveDrivePoseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
+            LimelightHelpers.PoseEstimate mt2First = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
+            LimelightHelpers.PoseEstimate mt2Second = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-first");
+            swerveDrivePoseEstimator.update(getGyroYaw(), getModulePositions());
+            addVisionMeasurementByThresholds(mt2First, mt2Second);
+        } catch (Exception e) {
         }
-        for(SwerveModule mod : mSwerveMods){
-            SmartDashboard.putNumber("Mod " + mod.moduleNumber + " CANcoder", mod.getCANcoder().getDegrees());
-            SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Angle", mod.getPosition().angle.getDegrees());
-            SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Velocity", mod.getState().speedMetersPerSecond);    
-        }
-
-        LimelightHelpers.SetRobotOrientation("limelight", swerveDrivePoseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
-        LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
-        LimelightHelpers.PoseEstimate mt2_arka = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-arka");
-        addVisionMeasurementByThresholds(mt2, mt2_arka);
-        swerveDrivePoseEstimator.update(getGyroYaw(), getModulePositions());
-
-        SmartDashboard.putNumber("ROBOT DEGREES", getGyroAngle());
-        SmartDashboard.putNumber("ROBOT X", swerveDrivePoseEstimator.getEstimatedPosition().getX());
-        SmartDashboard.putNumber("ROBOT Y", swerveDrivePoseEstimator.getEstimatedPosition().getY());
 
         field2d.setRobotPose(swerveDrivePoseEstimator.getEstimatedPosition());
     }
@@ -265,7 +295,7 @@ public class SwerveSubsystem extends SubsystemBase {
     }  
 
        Pose2d[] currrentHumanPose2ds;
-    public Pose2d getHumanPlayerTarget(){
+   /* public Pose2d getHumanPlayerTarget(){
         if(DriverStation.getAlliance().get()==Alliance.Red){
             currrentHumanPose2ds = FieldConstants.redHumanPlayerTargets;
         } else{
@@ -273,9 +303,9 @@ public class SwerveSubsystem extends SubsystemBase {
         }
         
         return swerveDrivePoseEstimator.getEstimatedPosition().nearest(Arrays.asList(currrentHumanPose2ds));
-    }
+    }*/
 
-    public Pose2d[] getHumanPlayerABTarget(){
+   /* public Pose2d[] getHumanPlayerABTarget(){
         if(DriverStation.getAlliance().get()==Alliance.Red){
             currrentHumanPose2ds = FieldConstants.redHumanPlayerTargets;
         } else{
@@ -290,6 +320,6 @@ public class SwerveSubsystem extends SubsystemBase {
         } else{
             return FieldConstants.BLUE_TARGET_REEFS;
         }
-    }
+    }*/
     
 }
