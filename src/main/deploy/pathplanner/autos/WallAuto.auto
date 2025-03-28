@@ -7,67 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "GoToFirstRange"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "AlignToRightTarget"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "ScoreCoralToL4"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "GoToGetFirstCoral"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "AutoIntake"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "GoToSecondRange"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "AlignToRightTarget"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "ScoreCoralToL4"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "GoToGetSecondCoral"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "AutoIntake"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "GoToThirdRange"
+            "pathName": "GoToFirstRangeWall"
           }
         },
         {
@@ -80,6 +20,74 @@
           "type": "named",
           "data": {
             "name": "ScoreCoralToL4"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "SendElevatorToHome"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "GoToFirstCoralPickWall"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "AutoIntake"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "GoToSecondRangeWall"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AlignToRightTarget"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ScoreCoralToL4"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "SendElevatorToHome"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "GoToSecondCoralPickWall"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "AutoIntake"
+                }
+              }
+            ]
           }
         }
       ]

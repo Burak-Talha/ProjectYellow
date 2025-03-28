@@ -1,0 +1,101 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 5.334528688529499,
+        "y": 2.928125000007183
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 3.3086065573770487,
+        "y": 1.8012807377049185
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 1.0429303278688524,
+        "y": 0.6864241803278684
+      },
+      "prevControl": {
+        "x": 3.368545081967211,
+        "y": 1.7053790983606554
+      },
+      "nextControl": {
+        "x": 0.8139452069646633,
+        "y": 0.5860956479729402
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 3.2127049180327862,
+        "y": 2.436629098360655
+      },
+      "prevControl": {
+        "x": 2.6612704918032777,
+        "y": 1.8612192622950818
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.5,
+      "rotationDegrees": 50.0
+    }
+  ],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 0.9182984469952717,
+      "maxWaypointRelativePos": 1.4962862930452387,
+      "constraints": {
+        "maxVelocity": 0.6,
+        "maxAcceleration": 0.6,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "AutoIntake",
+      "waypointRelativePos": 0.7454422687373342,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "AutoIntake"
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 5.0,
+    "maxAcceleration": 3.5,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0.0,
+    "rotation": 52.373766361330205
+  },
+  "reversed": false,
+  "folder": "processor_paths",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 123.69006752597986
+  },
+  "useDefaultConstraints": false
+}

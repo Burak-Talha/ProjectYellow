@@ -1,0 +1,99 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "GoToFirstRange"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AlignToRightTarget"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ScoreCoralToL4"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "SendElevatorToHome"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "GoToFirstCoralPick"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "AutoIntake"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "GoToSecondRangee"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AlignToLeftTarget"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ScoreCoralToL4"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "SendElevatorToHome"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "GoToSecondCoralPick"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "AutoIntake"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}
