@@ -140,7 +140,7 @@ public final class Constants {
     }
 
     public static final class AlignmentConstants{
-        public static final double DISTANCE_ALIGMENT_TOLERANCE = 0.2;
+        public static final double DISTANCE_ALIGMENT_TOLERANCE = 0.1;
         public static final double ANGLE_ALIGMENT_TOLERANCE = 5;
 
         public static final double X_CONTROLLER_P = 1.2;
@@ -226,8 +226,8 @@ public final class Constants {
         public static final double KA = 0;
         public static final double KS = 0;
 
-        public static final double MAX_VELOCITY = 500;
-        public static final double MAX_ACCELERATION = 350;
+        public static final double MAX_VELOCITY = 250;
+        public static final double MAX_ACCELERATION = 175;
 
         public static final double DEFAULT_CLEANER_DEGREE = -290;
         public static final double LOWER_ALGAE_DEGREE = 0;
