@@ -59,8 +59,8 @@ public class GripperSubsystem extends SubsystemBase {
   }
 
   public void slowerGetIn(){
-    leftSparkMax.getClosedLoopController().setReference(0.14, ControlType.kDutyCycle, ClosedLoopSlot.kSlot0);
-    rightSparkMax.getClosedLoopController().setReference(-0.14, ControlType.kDutyCycle, ClosedLoopSlot.kSlot0);
+    leftSparkMax.getClosedLoopController().setReference(0.17, ControlType.kDutyCycle, ClosedLoopSlot.kSlot0);
+    rightSparkMax.getClosedLoopController().setReference(-0.17, ControlType.kDutyCycle, ClosedLoopSlot.kSlot0);
   }
 
   public void getOut(){
@@ -83,7 +83,7 @@ public class GripperSubsystem extends SubsystemBase {
   }
 
   public boolean isCoralEjected(){
-    return !frontInfrared.get();
+    return frontInfrared.get();
   }
 
   public boolean frontInfrared(){

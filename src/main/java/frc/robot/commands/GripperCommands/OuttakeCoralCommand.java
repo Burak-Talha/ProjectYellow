@@ -12,7 +12,6 @@ import frc.robot.subsystems.GripperSubsystem;
 public class OuttakeCoralCommand extends Command {
 
   private GripperSubsystem gripperSubsystem;
-  ElevatorSubsytem elevatorSubsystem = new ElevatorSubsytem();
 
   /** Creates a new CoralOuttakeCommand. */
   public OuttakeCoralCommand(GripperSubsystem gripperSubsystem) {

@@ -4,32 +4,28 @@
 
 package frc.robot.commands.GripperCommands;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.GripperSubsystem;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class AutoOuttakeCoralCommand extends Command {
+public class SemIntakeCommand extends Command {
 
   GripperSubsystem gripperSubsystem;
 
-  /** Creates a new AutoOuttakeCoralCommand. */
-  public AutoOuttakeCoralCommand(GripperSubsystem gripperSubsystem) {
+  /** Creates a new SemIntakeCommand. */
+  public SemIntakeCommand(GripperSubsystem gripperSubsystem) {
     this.gripperSubsystem = gripperSubsystem;
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(gripperSubsystem);
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {
-    SmartDashboard.putBoolean("AUTOOUTTAKECORAL", true);
-  }
+  public void initialize() {}
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    gripperSubsystem.getOut();
+    gripperSubsystem.fasterGetIn();
   }
 
   // Called once the command ends or is interrupted.
@@ -41,6 +37,6 @@ public class AutoOuttakeCoralCommand extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return gripperSubsystem.rearInfrared();
   }
 }
