@@ -11,9 +11,11 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -70,8 +72,14 @@ public class RobotContainer {
     private final VisionSubsystem visionSubsystem = new VisionSubsystem();
     private final CleanerSubsystem cleanerSubsystem = new CleanerSubsystem();
 
+    private SendableChooser<Command> autoChooser = new SendableChooser<>();
+
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
+
+        autoChooser.setDefaultOption("Processor autonomous", AutoBuilder.buildAuto("PROCESSOR_AUTO"));
+        autoChooser.addOption("Wall Autonomous", AutoBuilder.buildAuto("WallAuto"));
+        autoChooser.addOption("Do nothing", new PrintCommand(""));
         
         //cleanerSubsystem.setDefaultCommand(new RotateCleanerCommand(cleanerSubsystem, DesiredCleanerPosition.DEFAULT));
         NamedCommands.registerCommand("AlignToLeftTarget", new AlignToLeftReefTargetCommand(swerveSubsystem, visionSubsystem));
@@ -137,14 +145,12 @@ public class RobotContainer {
         new JoystickButton(operator, 3).whileTrue(new WaitUntilCommand(gripperSubsystem::hasCoral).andThen(new ScoreCoralToXCommand(elevatorSubsystem, gripperSubsystem, DesiredElevatorPosition.L3)));
         new JoystickButton(operator, 4).whileTrue(new WaitUntilCommand(gripperSubsystem::hasCoral).andThen(new ScoreCoralToXCommand(elevatorSubsystem, gripperSubsystem, DesiredElevatorPosition.L4)));
 
-        // Cleaner test
-        //new JoystickButton(operator, 4).whileTrue(new RotateCleanerCommand(cleanerSubsystem, DesiredCleanerPosition.DEFAULT));
-        //new JoystickButton(operator, 5).whileTrue(new RotateCleanerCommand(cleanerSubsystem, DesiredCleanerPosition.LOWER_ALGAE));
-        //new JoystickButton(operator, 6).whileTrue(new RotateCleanerCommand(cleanerSubsystem, DesiredCleanerPosition.UPPER_ALGAE));
         new JoystickButton(operator, 5).whileTrue(new CleanerUpCommand(cleanerSubsystem));
         new JoystickButton(operator, 6).whileTrue(new CleanerDownCommand(cleanerSubsystem));
 
-                // Clean Algae Commands
+
+
+        // Clean Algae Commands
         /*new JoystickButton(driver, 1).whileTrue(
             new ParallelCommandGroup(
                                       new RotateCleanerCommand(cleanerSubsystem, DesiredCleanerPosition.DEFAULT),
@@ -168,6 +174,6 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-        return AutoBuilder.buildAuto("WallAuto");//new RotateCleanerCommand(cleanerSubsystem, DesiredCleanerPosition.DEFAULT).andThen(AutoBuilder.buildAuto("New Auto"));
+        return autoChooser.getSelected();
     }
 }
