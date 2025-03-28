@@ -37,10 +37,15 @@ public class RaiseElevatorCommand extends InstantCommand {
     public void end(boolean interrupted) {
       SmartDashboard.putBoolean("RAISE ELEVATOR HAS ENDED", true);
     }
+
+    @Override
+    public void execute(){
+    }
     
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
+      SmartDashboard.putNumber("ERROR TOLERANCE", elevatorSubsystem.elevatorTalon.getPosition().getValueAsDouble());
       return elevatorSubsystem.atSetpoint();
     }
 

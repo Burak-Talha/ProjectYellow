@@ -41,6 +41,7 @@ public class ElevatorSubsytem extends SubsystemBase {
 
   public boolean attemptingZeroing = false;
   public boolean hasZeroed = false;
+  public boolean atSetpoint = false;
 
   public DesiredElevatorPosition desiredElevatorPosition = DesiredElevatorPosition.DEFAULT;
 
@@ -50,12 +51,16 @@ public class ElevatorSubsytem extends SubsystemBase {
   public ElevatorSubsytem() {
     configureMotor();
     motionRequest = new MotionMagicVoltage(0);
-
   }
 
   @Override
   public void periodic() {
     applyDemand();
+    SmartDashboard.putNumber("DEBUG ELEVATOR HEIGHT", DEBUGELEVATORHEIGHT());
+    SmartDashboard.putNumber("CURRENT DEBUG ELEVATOR HEIGHT", CURRENTDEBUGELEVATORHEIGHT());
+    SmartDashboard.putBoolean("AT SETPOINT", (DEBUGELEVATORHEIGHT()-CURRENTDEBUGELEVATORHEIGHT() < 1.2));
+    atSetpoint = (DEBUGELEVATORHEIGHT()-CURRENTDEBUGELEVATORHEIGHT() < 1.7);
+
   }
 
   public void setDesiredElevatorPosition(DesiredElevatorPosition desiredElevatorPosition){
@@ -97,7 +102,15 @@ public class ElevatorSubsytem extends SubsystemBase {
   }
 
   public boolean atSetpoint(){
-    return MathUtil.isNear(elevatorHeightSetpoint, currentElevatorHeight, 5);
+    return atSetpoint;
+  }
+
+  public double DEBUGELEVATORHEIGHT(){
+    return elevatorHeightSetpoint;
+  }
+
+  public double CURRENTDEBUGELEVATORHEIGHT(){
+    return elevatorTalon.getPosition().getValueAsDouble();
   }
 
   public DesiredElevatorPosition getDesiredElevatorPosition(){
