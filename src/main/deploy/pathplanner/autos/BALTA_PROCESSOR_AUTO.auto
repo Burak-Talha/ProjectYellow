@@ -29,22 +29,15 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "path",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "GoToFirstCoralPick"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "AutoIntake"
-                }
-              }
-            ]
+            "pathName": "GoToFirstCoralPick"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AutoIntake"
           }
         },
         {
@@ -56,7 +49,7 @@
         {
           "type": "named",
           "data": {
-            "name": "AlignToLeftTarget"
+            "name": "AlignToRightTarget"
           }
         },
         {
