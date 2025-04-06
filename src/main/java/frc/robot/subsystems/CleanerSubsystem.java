@@ -98,7 +98,7 @@ public class CleanerSubsystem extends SubsystemBase {
     cleanerRot.set(0.05);
   }
 
-  public void getOut(){
+  public void   getOut(){
     cleanerRot.set(-0.05);
   }
 

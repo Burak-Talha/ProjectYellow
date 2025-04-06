@@ -64,7 +64,7 @@ public class SwerveSubsystem extends SubsystemBase {
     private static final Matrix<N3,N1> localMeasurementStdDevs = VecBuilder.fill(0.2, 0.2, Math.toRadians(5));
 
     public SwerveSubsystem() {  
-        //Translation2d setpointTranslation2d = aprilTagFieldLayout.getTagPose(1).get().toPose2d().getTranslation().minus((swerveOdometry.getPoseMeters()));
+        //Translation2d set pointTranslation2d = aprilTagFieldLayout.getTagPose(1).get().toPose2d().getTranslation().minus((swerveOdometry.getPoseMeters()));
         //xpidController.setpoint(setpointTranslation2d.getX());
         SmartDashboard.putData(field2d);
 
@@ -288,6 +288,18 @@ public class SwerveSubsystem extends SubsystemBase {
         }
 
         field2d.setRobotPose(swerveDrivePoseEstimator.getEstimatedPosition());
+
+        for (SwerveModule mod : mSwerveMods){
+            SmartDashboard.putNumber("Mod"+ mod.moduleNumber + "Cancoder", mod.getCANcoder().getDegrees());
+            SmartDashboard.putNumber("Mod"+ mod.moduleNumber + "angle", mod.getPosition().angle.getDegrees());
+
+            
+
+        }
+
+
+
+
     }
 
     public void stop() {

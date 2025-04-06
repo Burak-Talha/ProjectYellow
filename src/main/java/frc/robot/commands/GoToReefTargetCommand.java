@@ -18,7 +18,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.FieldConstants;
-import frc.robot.RobotContainer.TargetAB;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 
@@ -50,7 +49,9 @@ public class GoToReefTargetCommand extends Command {
     double minDistance = Integer.MAX_VALUE;
     List<AprilTag> aprilTags = FieldConstants.APRIL_TAG_FIELD_LAYOUT.getTags();
     SmartDashboard.putNumber("April Tag size:", aprilTags.size());
+    
     for(AprilTag aprilTag : aprilTags){
+
       double currentDistance = aprilTag.pose.getTranslation().toTranslation2d().getDistance(swerveSubsystem.getEstimatedPose().getTranslation());
       if(currentDistance < minDistance){
         minDistance = currentDistance;

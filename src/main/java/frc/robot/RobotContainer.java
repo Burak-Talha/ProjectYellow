@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -55,11 +56,6 @@ import frc.robot.subsystems.IntakeSubsystem.DesiredIntakePosition;
  */
 public class RobotContainer {
 
-    /* Target Options */
-    public enum TargetAB{
-        A, B
-    }
-
     /* Controllers */
     private final XboxController driver = new XboxController(0);
     private final Joystick operator = new Joystick(1);
@@ -77,20 +73,30 @@ public class RobotContainer {
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
 
-        autoChooser.setDefaultOption("Processor autonomous", AutoBuilder.buildAuto("PROCESSOR_AUTO"));
-        autoChooser.addOption("Wall Autonomous", AutoBuilder.buildAuto("WallAuto"));
-        autoChooser.addOption("Do nothing", new PrintCommand(""));
+        // Add auto routines
+        //autoChooser.setDefaultOption("Processor autonomous", AutoBuilder.buildAuto("PROCESSOR_AUTO"));
+        //autoChooser.addOption("Wall Autonomous", AutoBuilder.buildAuto("WallAuto"));
+        //autoChooser.addOption("Do nothing", new PrintCommand(""));
         
-        //cleanerSubsystem.setDefaultCommand(new RotateCleanerCommand(cleanerSubsystem, DesiredCleanerPosition.DEFAULT));
+        // Align autonomously
         NamedCommands.registerCommand("AlignToLeftTarget", new AlignToLeftReefTargetCommand(swerveSubsystem, visionSubsystem));
         NamedCommands.registerCommand("AlignToRightTarget", new AlignToRightReefTargetCommand(swerveSubsystem, visionSubsystem));
+
+        // Auto Intake Commands
         NamedCommands.registerCommand("AutoIntake", new AutoIntakeCoralCommand(gripperSubsystem));
         NamedCommands.registerCommand("SemiIntake", new SemIntakeCommand(gripperSubsystem));
+
+        // Auto Elevator Commands
         NamedCommands.registerCommand("SendElevatorToHome", new RaiseElevatorCommand(elevatorSubsystem, DesiredElevatorPosition.L1));
         NamedCommands.registerCommand("ScoreCoralToL1", new WaitUntilCommand(gripperSubsystem::hasCoral).andThen(new ScoreCoralToXCommand(elevatorSubsystem, gripperSubsystem, DesiredElevatorPosition.L1)));
         NamedCommands.registerCommand("ScoreCoralToL2", new WaitUntilCommand(gripperSubsystem::hasCoral).andThen(new ScoreCoralToXCommand(elevatorSubsystem, gripperSubsystem, DesiredElevatorPosition.L2)));
         NamedCommands.registerCommand("ScoreCoralToL3", new WaitUntilCommand(gripperSubsystem::hasCoral).andThen(new ScoreCoralToXCommand(elevatorSubsystem, gripperSubsystem, DesiredElevatorPosition.L3)));
         NamedCommands.registerCommand("ScoreCoralToL4", new WaitUntilCommand(gripperSubsystem::hasCoral).andThen(new ScoreCoralToXCommand(elevatorSubsystem, gripperSubsystem, DesiredElevatorPosition.L4)));
+        
+        autoChooser = AutoBuilder.buildAutoChooser();
+        SmartDashboard.putData(autoChooser);
+
+
         if(DriverStation.getAlliance().get()==Alliance.Red){
         swerveSubsystem.setDefaultCommand(
             new TeleopSwerve(
@@ -139,11 +145,11 @@ public class RobotContainer {
         new JoystickButton(driver, 6).whileTrue(new OuttakeCoralCommand(gripperSubsystem));
 
         // Elevator PID test  
-        new JoystickButton(operator, 5).whileTrue((new ScoreCoralToXCommand(elevatorSubsystem, gripperSubsystem, DesiredElevatorPosition.L1)));
-        new JoystickButton(operator, 1).whileTrue(new WaitUntilCommand(gripperSubsystem::hasCoral).andThen(new ScoreCoralToXCommand(elevatorSubsystem, gripperSubsystem, DesiredElevatorPosition.L1)));
-        new JoystickButton(operator, 2).whileTrue(new WaitUntilCommand(gripperSubsystem::hasCoral).andThen(new ScoreCoralToXCommand(elevatorSubsystem, gripperSubsystem, DesiredElevatorPosition.L2)));
-        new JoystickButton(operator, 3).whileTrue(new WaitUntilCommand(gripperSubsystem::hasCoral).andThen(new ScoreCoralToXCommand(elevatorSubsystem, gripperSubsystem, DesiredElevatorPosition.L3)));
-        new JoystickButton(operator, 4).whileTrue(new WaitUntilCommand(gripperSubsystem::hasCoral).andThen(new ScoreCoralToXCommand(elevatorSubsystem, gripperSubsystem, DesiredElevatorPosition.L4)));
+        new JoystickButton(operator, 9).whileTrue((new RaiseElevatorCommand(elevatorSubsystem, DesiredElevatorPosition.L1)));
+        new JoystickButton(operator, 1).whileTrue(new WaitUntilCommand(gripperSubsystem::hasCoral).andThen(new RaiseElevatorCommand(elevatorSubsystem, DesiredElevatorPosition.L1)));
+        new JoystickButton(operator, 2).whileTrue(new WaitUntilCommand(gripperSubsystem::hasCoral).andThen(new RaiseElevatorCommand(elevatorSubsystem, DesiredElevatorPosition.L2)));
+        new JoystickButton(operator, 3).whileTrue(new WaitUntilCommand(gripperSubsystem::hasCoral).andThen(new RaiseElevatorCommand(elevatorSubsystem, DesiredElevatorPosition.L3)));
+        new JoystickButton(operator, 4).whileTrue(new WaitUntilCommand(gripperSubsystem::hasCoral).andThen(new RaiseElevatorCommand(elevatorSubsystem, DesiredElevatorPosition.L4)));
 
         new JoystickButton(operator, 5).whileTrue(new CleanerUpCommand(cleanerSubsystem));
         new JoystickButton(operator, 6).whileTrue(new CleanerDownCommand(cleanerSubsystem));
