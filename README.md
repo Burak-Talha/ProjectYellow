@@ -6,9 +6,6 @@
 
 This repository contains the source code for the **Yellow** robot, developed by **Balta Robotics (Team 10213)** for the 2025 FRC (FIRST Robotics Competition) season.
 
-![Robot Scores Coral](https://drive.google.com/file/d/1ASJleUQKGtyah4XQJVPnrV73CB8zTahN/view?usp=drive_link)
-![Robot Itself](https://drive.google.com/file/d/1ODRBIikZqRYU7bVpkX7dLzun4oMFFWmI/view?usp=drive_link)
-
 -----
 
 ## Overview
